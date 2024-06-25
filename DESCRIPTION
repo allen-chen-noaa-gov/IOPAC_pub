@@ -1,0 +1,21 @@
+Package: IOPAC
+Title: Input-Output model for Pacific Coast Fisheries (IOPAC)
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "First",
+           family = "Last",
+           role = c("aut", "cre"),
+           email = "first.last@example.com",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: This is a repository containing the Input-Output model for Pacific 
+    Coast Fisheries (IOPAC), created by Jerry Leonard. This model estimates 
+    gross changes in economic contributions and impacts due to changes in 
+    fishery harvests, for example from environmental or policy changes.
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Depends: 
+    R (>= 2.10)
