@@ -19,7 +19,7 @@ files2<- lapply(files2, setNames, colnames)
 sums<- files2[1:5]
 counts<- files2[6:10]
 sd<- files2[11:15]
-# divide sums by counts: (but only for rows 1:21 and exclude columns 19 and 20)----- verify this
+# divide sums by counts: 
 sums<- lapply(sums, function(x){
   x[-c(1,20) ] 
 })
@@ -45,7 +45,7 @@ lapply(1:length(means), function(i) write.csv(means[[i]],
                                                 row.names = TRUE)) # write 5 csv files for mean values
 lapply(1:length(sd), function(i) write.csv(sd[[i]], 
                                               file = paste0(names(sd[i]), ".csv"),
-                                              row.names = TRUE)) # write 5 csv fiels for sd- plug into below
+                                              row.names = TRUE)) # write 5 csv files for sd- plug into below
 
 ############################################################################################################
 # IOPAC with normal and log-normal draws:
