@@ -1,14 +1,64 @@
-# Read in data
+#############################################################################################################
 library(IOPAC);require(tidyverse)
-file_list <- list.files("/Users/scheld/Desktop/Current Research/NWFSC EIA/IOPAC_files/IOPAC_data")
-for (i in 1:length(file_list)){load(paste0("/Users/scheld/Desktop/Current Research/NWFSC EIA/IOPAC_files/IOPAC_data/",file_list[i]))}
+############################################################################################################
+# Process raw values to create shares:
+temp <- setwd("SET WD TO WHERE SUMS, COUNTS, and SD are stored") 
+temp = list.files(pattern="*.csv")
+files<- lapply(temp, read_csv)
+Filenames<- gsub(".csv","",as.character(temp))
+names(files) <- Filenames
+
+# COSTS and SD
+files2<- lapply(files, function(x){data.frame(t(as.matrix(x))) })
+files2<-  lapply(files2, function(x){x[-c(1,2), ] })
+files2<-  lapply(files2, function(x){x<- x %>% mutate(Cost= costflist_2018$vessel$Cost, Type=Cost)})
+files2<-lapply(files2, function(x) x %>% relocate(Cost, .before = 'X1'))
+colnames<- colnames(costflist_2022[[1]]) 
+files2<- lapply(files2, setNames, colnames)
+
+sums<- files2[1:5]
+counts<- files2[6:10]
+sd<- files2[11:15]
+# divide sums by counts: (but only for rows 1:21 and exclude columns 19 and 20)----- verify this
+sums<- lapply(sums, function(x){
+  x[-c(1,20) ] 
+})
+sums<- lapply(sums, function(y){
+  mutate_all(y, function(x) as.numeric(as.character(x)))
+})
+counts<- lapply(counts, function(x){
+  x[-c(1,20) ] 
+})
+counts<- lapply(counts, function(y){
+  mutate_all(y, function(x) as.numeric(as.character(x)))
+})
+sd<- lapply(sd, function(x){
+  x[-c(1,20) ] 
+})
+sd<- lapply(sd, function(y){
+  mutate_all(y, function(x) as.numeric(as.character(x)))
+})
+means = mapply(FUN = `/`, sums, counts, SIMPLIFY = FALSE) # divide sums by counts of vessels
+means<- rapply( means, f=function(x) ifelse(is.na(x),0,x), how="replace" )
+lapply(1:length(means), function(i) write.csv(means[[i]], 
+                                                file = paste0(names(means[i]), ".csv"),
+                                                row.names = TRUE)) # write 5 csv files for mean values
+lapply(1:length(sd), function(i) write.csv(sd[[i]], 
+                                              file = paste0(names(sd[i]), ".csv"),
+                                              row.names = TRUE)) # write 5 csv fiels for sd- plug into below
+
+############################################################################################################
+# IOPAC with normal and log-normal draws:
+# Read in data
+file_list <- list.files("SET PATH TO ALL IOPAC DATA")
+for (i in 1:length(file_list)){load(paste0("/SET PATH TO ALL IOPAC DATA",file_list[i]))}
 
 # Generate normal draws, produce multipliers for each year
 draws <- 1000
 set.seed(123)
 for(i in 2018:2021){
-  means <- read.csv(paste0("/Users/scheld/Desktop/Current Research/NWFSC EIA/Data/means and sds/means",i,".csv"),row.names=1)
-  sds <- read.csv(paste0("/Users/scheld/Desktop/Current Research/NWFSC EIA/Data/means and sds/sds",i,".csv"),row.names=1)
+  means <- read.csv(paste0("SET PATH TO MEAN VALUES CREATED ABOVE",i,".csv"),row.names=1)
+  sds <- read.csv(paste0("SET PATH TO SD VALUES CREATED ABOVE",i,".csv"),row.names=1)
   draw.mats <- list(); output <- list()
   no.data <- colnames(means)[which(apply(means,2,sum)==0)]
   iopac.costs <- get(paste0("costflist_",i))
@@ -41,8 +91,8 @@ for(i in 2018:2021){
 # Generate lognormal draws, produce multipliers for each year
 set.seed(123)
 for(i in 2018:2021){
-  means <- read.csv(paste0("/Users/scheld/Desktop/Current Research/NWFSC EIA/Data/means and sds/means",i,".csv"),row.names=1)
-  sds <- read.csv(paste0("/Users/scheld/Desktop/Current Research/NWFSC EIA/Data/means and sds/sds",i,".csv"),row.names=1)
+  means <- read.csv(paste0("SET PATH TO MEAN VALUES CREATED ABOVE",i,".csv"),row.names=1)
+  sds <- read.csv(paste0("SET PATH TO SD VALUES CREATED ABOVE",i,".csv"),row.names=1)
   draw.mats <- list(); output <- list()
   no.data <- colnames(means)[which(apply(means,2,sum)==0)]
   iopac.costs <- get(paste0("costflist_",i))
