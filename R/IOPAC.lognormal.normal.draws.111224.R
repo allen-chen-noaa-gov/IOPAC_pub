@@ -2,9 +2,7 @@
 library(IOPAC);require(tidyverse)
 ################################################################################
 # Process raw values to create shares:
-load("U:\\R_packages\\IOPAC_data\\costflist_2018.rda")
-load("U:\\R_packages\\IOPAC_data\\costflist_2022.rda")
-datadir <- "U:\\NWFSC_data_code\\IOPAC\\rawvals\\"
+datadir <- ""
 
 temp <- setwd(datadir)
 temp <- list.files(pattern="*.csv")
@@ -84,8 +82,8 @@ lapply(1:length(sd), function(i) write.csv(sd[[i]],
 ############################################################################################################
 # IOPAC with normal and log-normal draws:
 # Read in data
-file_list <- list.files(paste0("U:\\R_packages\\IOPAC_data\\"))
-for (i in 1:length(file_list)){load(paste0("U:\\R_packages\\IOPAC_data\\", file_list[i]))}
+file_list <- list.files(paste0(""))
+for (i in 1:length(file_list)){load(paste0("", file_list[i]))}
 
 costflist_2017$processor$Value <- costflist_2017$processor$Xn2017
 costflist_2018$processor$Value <- costflist_2018$processor$Xn2018
