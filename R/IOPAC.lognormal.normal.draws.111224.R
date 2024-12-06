@@ -1,24 +1,49 @@
-#############################################################################################################
+################################################################################
 library(IOPAC);require(tidyverse)
-############################################################################################################
+################################################################################
 # Process raw values to create shares:
-temp <- setwd("SET WD TO WHERE SUMS, COUNTS, and SD are stored") 
-temp = list.files(pattern="*.csv")
-files<- lapply(temp, read_csv)
-Filenames<- gsub(".csv","",as.character(temp))
+load("U:\\R_packages\\IOPAC_data\\costflist_2018.rda")
+load("U:\\R_packages\\IOPAC_data\\costflist_2022.rda")
+datadir <- "U:\\NWFSC_data_code\\IOPAC\\rawvals\\"
+
+temp <- setwd(datadir)
+temp <- list.files(pattern="*.csv")
+files <- lapply(temp, read_csv)
+Filenames <- gsub(".csv", "", as.character(temp))
 names(files) <- Filenames
 
+rownames <- as.character(as.data.frame(files[[1]])[,1])
+
 # COSTS and SD
-files2<- lapply(files, function(x){data.frame(t(as.matrix(x))) })
-files2<-  lapply(files2, function(x){x[-c(1,2), ] })
+# files2<- lapply(files, function(x){data.frame(t(as.matrix(x))) })
+# files2<-  lapply(files2, function(x){x[-c(1,2), ] })
+
+#there was a transpose above that was messing me up
+files2<- lapply(files, function(x){data.frame((as.matrix(x))) })
+files2<-  lapply(files2, function(x){x[, -c(1)] })
 files2<-  lapply(files2, function(x){x<- x %>% mutate(Cost= costflist_2018$vessel$Cost, Type=Cost)})
-files2<-lapply(files2, function(x) x %>% relocate(Cost, .before = 'X1'))
+# files2<-lapply(files2, function(x) x %>% relocate(Cost, .before = 'X1'))
+
+#No X1 in my data
+files2<-lapply(files2, function(x) x %>% relocate(Cost))
 colnames<- colnames(costflist_2022[[1]]) 
 files2<- lapply(files2, setNames, colnames)
 
 sums<- files2[1:5]
 counts<- files2[6:10]
 sd<- files2[11:15]
+
+for (i in 1:length(counts)) {
+
+replacecounts <- counts[[i]][counts[[i]]$Cost == "Proprietary income", 2:19]
+replacecounts[is.na(replacecounts)] <- 0
+
+counts[[i]][1:23, 2:19] <- replacecounts %>% slice(rep(1:n(), each=23))
+
+counts[[i]][counts[[i]]$Cost == "Proprietary income", 1] <- "REV"
+
+}
+
 # divide sums by counts: 
 sums<- lapply(sums, function(x){
   x[-c(1,20) ] 
@@ -40,34 +65,67 @@ sd<- lapply(sd, function(y){
 })
 means = mapply(FUN = `/`, sums, counts, SIMPLIFY = FALSE) # divide sums by counts of vessels
 means<- rapply( means, f=function(x) ifelse(is.na(x),0,x), how="replace" )
+
+means <-  lapply(means, function(x){x<- x %>% mutate(Cost=(rownames))})
+sd <-  lapply(sd, function(x){x<- x %>% mutate(Cost= (rownames))}) 
+
+for (i in 1:length(sd)) {
+means[[i]] <- means[[i]] %>% relocate(Cost)
+sd[[i]] <- sd[[i]] %>% relocate(Cost)
+}
+
 lapply(1:length(means), function(i) write.csv(means[[i]], 
-                                                file = paste0(names(means[i]), ".csv"),
-                                                row.names = TRUE)) # write 5 csv files for mean values
+  file = paste0("revised\\", names(means[i]), "_rev.csv"),
+  row.names = FALSE)) # write 5 csv files for mean values
 lapply(1:length(sd), function(i) write.csv(sd[[i]], 
-                                              file = paste0(names(sd[i]), ".csv"),
-                                              row.names = TRUE)) # write 5 csv files for sd- plug into below
+  file = paste0("revised\\", names(sd[i]), "_rev.csv"),
+  row.names = FALSE)) # write 5 csv files for sd- plug into below
 
 ############################################################################################################
 # IOPAC with normal and log-normal draws:
 # Read in data
-file_list <- list.files("SET PATH TO ALL IOPAC DATA")
-for (i in 1:length(file_list)){load(paste0("/SET PATH TO ALL IOPAC DATA",file_list[i]))}
+file_list <- list.files(paste0("U:\\R_packages\\IOPAC_data\\"))
+for (i in 1:length(file_list)){load(paste0("U:\\R_packages\\IOPAC_data\\", file_list[i]))}
+
+costflist_2017$processor$Value <- costflist_2017$processor$Xn2017
+costflist_2018$processor$Value <- costflist_2018$processor$Xn2018
+costflist_2019$processor$Value <- costflist_2019$processor$Xn2019
+costflist_2020$processor$Value <- costflist_2020$processor$Xn2020
+costflist_2021$processor$Value <- costflist_2021$processor$Xn2021
+costflist_2022$processor$Value <- costflist_2022$processor$Xn2022
+
+costflist_2017$processor$ShareC <- costflist_2017$processor$Xn2017/
+  costflist_2017$processor$Xn2017[costflist_2017$processor$Type=="Revenue"]
+costflist_2018$processor$ShareC <- costflist_2018$processor$Xn2018/
+  costflist_2018$processor$Xn2018[costflist_2018$processor$Type=="Revenue"]
+costflist_2019$processor$ShareC <- costflist_2019$processor$Xn2019/
+  costflist_2019$processor$Xn2019[costflist_2019$processor$Type=="Revenue"]
+costflist_2020$processor$ShareC <- costflist_2020$processor$Xn2020/
+  costflist_2020$processor$Xn2020[costflist_2020$processor$Type=="Revenue"]
+costflist_2021$processor$ShareC <- costflist_2021$processor$Xn2021/
+  costflist_2021$processor$Xn2021[costflist_2021$processor$Type=="Revenue"]
+costflist_2022$processor$ShareC <- costflist_2022$processor$Xn2022/
+  costflist_2022$processor$Xn2022[costflist_2022$processor$Type=="Revenue"]
 
 # Generate normal draws, produce multipliers for each year
 draws <- 1000
 set.seed(123)
 for(i in 2018:2021){
-  means <- read.csv(paste0("SET PATH TO MEAN VALUES CREATED ABOVE",i,".csv"),row.names=1)
-  sds <- read.csv(paste0("SET PATH TO SD VALUES CREATED ABOVE",i,".csv"),row.names=1)
+  means <- read.csv(paste0(datadir, "revised\\costf_", i, "_rev.csv"),row.names=1)
+  sds <- read.csv(paste0(datadir, "revised\\costf_sd_", i, "_rev.csv"),row.names=1)
   draw.mats <- list(); output <- list()
   no.data <- colnames(means)[which(apply(means,2,sum)==0)]
   iopac.costs <- get(paste0("costflist_",i))
+
   for(j in 1:draws){
     draw.mats[[j]] <- matrix(NA,nrow=nrow(means),ncol=ncol(means))
     colnames(draw.mats[[j]]) <- colnames(means)
     rownames(draw.mats[[j]]) <- rownames(means)
     for(k in colnames(means)){
       draw.mats[[j]][,k] = rnorm(nrow(means),mean=means[,k],sd=sds[,k]) 
+            
+            # draw.mats[[j]][,k] = rnorm(nrow(means),mean=means[,k],sd=0) 
+
       draw.mats[[j]][,k] = ifelse(draw.mats[[j]][,k]<0,0,draw.mats[[j]][,k])
       draw.mats[[j]][is.na(draw.mats[[j]])] <- 0
     }
@@ -83,6 +141,7 @@ for(i in 2018:2021){
     iopac.costs$vessel[,colnames(data)] <- data
     output[[j]] <- iopac_wrap(costfin=iopac.costs,ticsin=get(paste0("ticslist_",i)),markupsin=get(paste0("markups_",i)))  
   }
+
   assign(paste0("draw.mats.",i),draw.mats)
   assign(paste0("output.normal.",i),output)
   rm(means,sds,draw.mats,output,iopac.costs,data,output.per.employee)
