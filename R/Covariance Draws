@@ -20,7 +20,13 @@ options(scipen=999)
 datadir.2<-  # to revised  mean files files (based on last iteration of saved means)
 datadir.3<- # to cov files- saved as rds files
 
-file_list <- list.files(paste0("")) # not sure what is supposed to go here fir list files?
+#file_list <- list.files(paste0("")) # not sure what is supposed to go here fir list files? #Allen 012725 - I think maybe this used to load the other IOPAC data?
+datadir <- file.path("..", "IOPAC_data")
+file_list <- list.files(datadir)
+for (i in 1:length(file_list)){
+  load(paste0(file.path("..", "IOPAC_data"), "/",  file_list[i]))
+}
+
 #costflist_2017$processor$Value <- costflist_2017$processor$Xn2017
 costflist_2018$processor$Value <- costflist_2018$processor$Xn2018
 costflist_2019$processor$Value <- costflist_2019$processor$Xn2019
@@ -97,24 +103,35 @@ for(i in 2018:2020){ # avail years based on means and cov
     data[,no.data]<- apply(data[,!colnames(data)%in%no.data],1,mean)  
     raw_mean_rev<- as.data.frame((t(means["REV"]))) # set rev based on mean value (w/o draws)
     raw_mean_rev <- raw_mean_rev[ order(match(colnames(raw_mean_rev), names(means_list))) ] 
+
+    no.data.means <- colnames(raw_mean_rev)[which(apply(raw_mean_rev,2,sum)==0)] 
+    raw_mean_rev[,no.data]<- apply(raw_mean_rev[,!colnames(raw_mean_rev)%in%no.data.means],1,mean)  
+    raw_mean_rev <- raw_mean_rev[ order(match(names(raw_mean_rev), (colnames(data)))) ] 
+
     data["REV",] <- as.numeric(raw_mean_rev)
     data<- as.matrix(data)
     data <- rbind(data,prop.income=data["REV",]-colSums(data[grep("COST",rownames(data)),]))
     output.per.employee <- abs(data["REV",]/data["CREW",])
+
+    no.data.emp <- which(is.infinite(output.per.employee) == TRUE)
+    output.per.employee[no.data.emp ]<- mean(output.per.employee[-(no.data.emp)])  
+
     data <- data[!(rownames(data)%in%c("REV","CREW")),]
     data <- prop.table(data, 2) 
     data <- as.data.frame(rbind(data, output.per.employee))
-    data <- replace(data, is.na(data), 0)
-    data[as.matrix(data) == Inf]  <- 0
-    data[as.matrix(data) == -Inf]  <- 0
+    data <- replace(data, is.na(data), NA)
+    data[as.matrix(data) == Inf]  <- NA
+    data[as.matrix(data) == -Inf]  <- NA
     
+    rownames2 <- c("COST_CAPTAIN", "COST_CREW", "COST_FUEL", "COST_FOOD", "COST_ICE", "COST_BAIT", "COST_RMI", "COST_INS", "COST_INT", "COST_PUR", "COST_LEA", "COST_MOORAGE", "COST_LANDINGSTAX", "COST_ENFORCE", "COST_DUES", "COST_FREIGHT", "COST_OFFLOAD", "COST_TRUCK", "COST_OTHER", "COST_COMM", "COST_TRAV", "prop.income", "output.per.employee")
+
     # reorder rows to fit IOPAC
-    rownames2<- (as.data.frame(rownames2))
-    rownames2$rownames2[rownames2$rownames2 =="REV"] <- "prop.income" 
-    rownames2$rownames2[rownames2$rownames2 =="CREW"] <- "output.per.employee"
-    data <- data[ order(match(rownames(data), rownames2$rownames2)), ] # reorder rows to fit IOPAC
+    # rownames2<- (as.data.frame(rownames(iopac.costs$vessel)))
+    # rownames2$rownames2[rownames2$rownames2 =="REV"] <- "prop.income" 
+    # rownames2$rownames2[rownames2$rownames2 =="CREW"] <- "output.per.employee"
+    data <- data[ order(match(rownames(data), rownames2)), ] # reorder rows to fit IOPAC
     
-    iopac.costs$vessel[,colnames(data2)] <- data
+    iopac.costs$vessel[,colnames(data)] <- data
     output[[j]] <-  iopac_wrap(costfin=iopac.costs, ticsin=get(paste0("ticslist_",i)), markupsin=get(paste0("markups_",i)))  # issues with emplyment this way but output works here
     
   }
