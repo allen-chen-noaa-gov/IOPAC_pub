@@ -92,6 +92,7 @@ for(i in 2018:2020){ # avail years based on means and cov
     
     for(k in names(means_list)){
       Test_mean<- as.numeric(t(means_list[[k]]))
+      Test_mean<- Test_mean[ order(match(colnames(means_list[[k]]), rownames(cov[[k]]))) ] # added this- think orders of means and cov matrix didnt match!
       draw.mats[[j]][,k] = mvrnorm(n=1, mu = Test_mean, Sigma = cov[[k]]) # MVT Normal draw
       draw.mats[[j]][,k] = ifelse(draw.mats[[j]][,k]<0,0, draw.mats[[j]][,k]) # functions retained from sd version - sets values less than 0 to 0
       draw.mats[[j]][is.na(draw.mats[[j]])] <- 0 # functions retained from sd version - sets NA values to 0
