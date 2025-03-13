@@ -1,7 +1,7 @@
 library(ggplot2)
 
 #your output data .rds file path
-inmat <- readRDS()
+inmat <- readRDS("C:\\Users\\Allen.Chen\\Desktop\\output\\output.lognormal.2021.rds")
 
 incmult <- list()
 empmult <- list()
@@ -81,3 +81,11 @@ ggplot(plotemp, aes(x=Year, y=Emp, colour=Policy)) +
     geom_point(position=pd, shape=21, size=3, fill="white")
 
 ggsave("empex.png", width = 16, height = 9, units = "cm")
+
+outtable <- data.frame(poltab, NoAction_Income = incrat*poltab$NoAction, 
+  Alt1_Income = incrat*poltab$Alt1, Alt2_Income = incrat*poltab$Alt2,
+  NoAction_Emp = emprat*poltab$NoAction, Alt1_Emp = emprat*poltab$Alt1, 
+  Alt2_Emp = emprat*poltab$Alt2)
+
+write.table(outtable, file = 'policyextable.txt', col.names = TRUE,
+  row.names = FALSE, sep = "\t")
