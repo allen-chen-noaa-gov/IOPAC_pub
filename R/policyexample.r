@@ -1,12 +1,14 @@
 library(ggplot2)
 
 #your output data .rds file path
-inmat <- readRDS("C:\\Users\\Allen.Chen\\Desktop\\output\\output.lognormal.2021.rds")
+inmat <- readRDS()
 
 incmult <- list()
 empmult <- list()
 incout <- list()
 empout <- list()
+incmultout <- list()
+empmultout <- list()
 for (i in 1:length(inmat)) {
 
 incmult[[i]] <- inmat[[i]]$TotInc[
@@ -23,7 +25,13 @@ allrev <- 20581180
 incout[[i]] <- allrev*incmult[[i]] 
 empout[[i]] <- allrev*empmult[[i]] 
 
+incmultout[[i]] <- incmult[[i]] 
+empmultout[[i]] <- empmult[[i]] 
+
 }
+
+summary(unlist(incmultout))
+summary(unlist(empmultout)*1000)
 
 #mean(unlist(empmult))
 incrat <- (median(unlist(incout))/1000000)/21
