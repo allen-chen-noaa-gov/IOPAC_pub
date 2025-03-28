@@ -8,8 +8,8 @@ for (i in 1:length(file_list)){
   load(paste0(file.path("..", "IOPAC_data"), "/",  file_list[i]))
 }
 
-# Process raw values to create shares:
-datadir <- "U:\\NWFSC_data_code\\IOPAC\\rawvals_032725"
+# Process raw values (rawvals_032725) to create shares:
+datadir <- ""
 
 temp <- setwd(datadir)
 temp <- list.files(pattern="*.csv")

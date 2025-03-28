@@ -34,6 +34,50 @@ draws <- 1000
 set.seed(123)
 for(i in 2018:2021){
   means <- read.csv(paste0(here(), "\\data\\", "costf_", i, ".csv"),
+    row.names = 1)
+  sds <- read.csv(paste0(here(), "\\data\\", "costf_sd_", i, ".csv"),
+    row.names = 1)
+  draw.mats <- list(); output <- list()
+  no.data <- colnames(means)[which(apply(means,2,sum)==0)]
+  iopac.costs <- get(paste0("costflist_",i))
+
+  for(j in 1:draws){
+    draw.mats[[j]] <- matrix(NA,nrow=nrow(means),ncol=ncol(means))
+    colnames(draw.mats[[j]]) <- colnames(means)
+    rownames(draw.mats[[j]]) <- rownames(means)
+
+    for(k in colnames(means)){
+      draw.mats[[j]][,k] = rnorm(nrow(means),mean=means[,k],sd=sds[,k])
+      # draw.mats[[j]][,k] = rnorm(nrow(means),mean=means[,k],sd=0)
+
+      draw.mats[[j]][,k] = ifelse(draw.mats[[j]][,k]<0,0,draw.mats[[j]][,k])
+      draw.mats[[j]][is.na(draw.mats[[j]])] <- 0
+    }
+
+    data <- draw.mats[[j]]
+    data["REV",] <- as.numeric(means["REV",])
+    data[,no.data] <- apply(data[,!colnames(data)%in%no.data],1,mean)
+    data <- rbind(data,prop.income=data["REV",]-
+      colSums(data[grep("COST",rownames(data)),]))
+    output.per.employee <- abs(data["REV",]/data["CREW",])
+    data <- data[!(rownames(data)%in%c("REV","CREW")),]
+    data <- prop.table(data, 2) 
+    data <- as.data.frame(rbind(data, output.per.employee))
+    data <- replace(data, is.na(data), 0)
+    iopac.costs$vessel[,colnames(data)] <- data
+    output[[j]] <- iopac_wrap(costfin=iopac.costs,
+      ticsin=get(paste0("ticslist_",i)), markupsin=get(paste0("markups_",i)))
+  }
+
+  assign(paste0("draw.mats.",i),draw.mats)
+  assign(paste0("output.normal.",i),output)
+  rm(means,sds,draw.mats,output,iopac.costs,data,output.per.employee)
+}
+
+# Generate lognormal draws, produce multipliers for each year
+set.seed(123)
+for(i in 2018:2021){
+  means <- read.csv(paste0(here(), "\\data\\", "costf_", i, ".csv"),
     row.names=1)
   sds <- read.csv(paste0(here(), "\\data\\", "costf_sd_", i, ".csv"),
     row.names=1)
@@ -45,61 +89,32 @@ for(i in 2018:2021){
     draw.mats[[j]] <- matrix(NA,nrow=nrow(means),ncol=ncol(means))
     colnames(draw.mats[[j]]) <- colnames(means)
     rownames(draw.mats[[j]]) <- rownames(means)
-    for(k in colnames(means)){
-      draw.mats[[j]][,k] = rnorm(nrow(means),mean=means[,k],sd=sds[,k]) 
-            
-            # draw.mats[[j]][,k] = rnorm(nrow(means),mean=means[,k],sd=0) 
 
-      draw.mats[[j]][,k] = ifelse(draw.mats[[j]][,k]<0,0,draw.mats[[j]][,k])
+    for(k in colnames(means)){
+      draw.mats[[j]][,k] = rlnorm(nrow(means),
+      meanlog=log(means[,k]^2 / sqrt(sds[,k]^2 + means[,k]^2)),
+      sdlog=sqrt(log(1 + (sds[,k]^2 / means[,k]^2))))
+
+      draw.mats[[j]][,k] = ifelse(draw.mats[[j]][,k]>3*sds[,k],3*sds[,k],
+        draw.mats[[j]][,k])
       draw.mats[[j]][is.na(draw.mats[[j]])] <- 0
     }
+
     data <- draw.mats[[j]]
     data["REV",] <- as.numeric(means["REV",])
     data[,no.data] <- apply(data[,!colnames(data)%in%no.data],1,mean)
-    data <- rbind(data,prop.income=data["REV",]-colSums(data[grep("COST",rownames(data)),]))
+    data <- rbind(data,prop.income=data["REV",]-
+      colSums(data[grep("COST",rownames(data)),]))
     output.per.employee <- abs(data["REV",]/data["CREW",])
     data <- data[!(rownames(data)%in%c("REV","CREW")),]
     data <- prop.table(data, 2) 
     data <- as.data.frame(rbind(data, output.per.employee))
     data <- replace(data, is.na(data), 0)
     iopac.costs$vessel[,colnames(data)] <- data
-    output[[j]] <- iopac_wrap(costfin=iopac.costs,ticsin=get(paste0("ticslist_",i)),markupsin=get(paste0("markups_",i)))  
+    output[[j]] <- iopac_wrap(costfin=iopac.costs,
+      ticsin=get(paste0("ticslist_",i)),markupsin=get(paste0("markups_",i)))
   }
-
-  assign(paste0("draw.mats.",i),draw.mats)
-  assign(paste0("output.normal.",i),output)
-  rm(means,sds,draw.mats,output,iopac.costs,data,output.per.employee)
-}
-
-# Generate lognormal draws, produce multipliers for each year
-set.seed(123)
-for(i in 2018:2021){
-  means <- read.csv(paste0("SET PATH TO MEAN VALUES CREATED ABOVE",i,".csv"),row.names=1)
-  sds <- read.csv(paste0("SET PATH TO SD VALUES CREATED ABOVE",i,".csv"),row.names=1)
-  draw.mats <- list(); output <- list()
-  no.data <- colnames(means)[which(apply(means,2,sum)==0)]
-  iopac.costs <- get(paste0("costflist_",i))
-  for(j in 1:draws){
-    draw.mats[[j]] <- matrix(NA,nrow=nrow(means),ncol=ncol(means))
-    colnames(draw.mats[[j]]) <- colnames(means)
-    rownames(draw.mats[[j]]) <- rownames(means)
-    for(k in colnames(means)){
-      draw.mats[[j]][,k] = rlnorm(nrow(means),meanlog=log(means[,k]^2 / sqrt(sds[,k]^2 + means[,k]^2)),sdlog=sqrt(log(1 + (sds[,k]^2 / means[,k]^2)))) 
-      draw.mats[[j]][,k] = ifelse(draw.mats[[j]][,k]>3*sds[,k],3*sds[,k],draw.mats[[j]][,k])
-      draw.mats[[j]][is.na(draw.mats[[j]])] <- 0
-    }
-    data <- draw.mats[[j]]
-    data["REV",] <- as.numeric(means["REV",])
-    data[,no.data] <- apply(data[,!colnames(data)%in%no.data],1,mean)
-    data <- rbind(data,prop.income=data["REV",]-colSums(data[grep("COST",rownames(data)),]))
-    output.per.employee <- abs(data["REV",]/data["CREW",])
-    data <- data[!(rownames(data)%in%c("REV","CREW")),]
-    data <- prop.table(data, 2) 
-    data <- as.data.frame(rbind(data, output.per.employee))
-    data <- replace(data, is.na(data), 0)
-    iopac.costs$vessel[,colnames(data)] <- data
-    output[[j]] <- iopac_wrap(costfin=iopac.costs,ticsin=get(paste0("ticslist_",i)),markupsin=get(paste0("markups_",i)))  
-  }
+  
   assign(paste0("draw.mats.",i),draw.mats)
   assign(paste0("output.lognormal.",i),output)
   rm(means,sds,draw.mats,output,iopac.costs,data,output.per.employee)
