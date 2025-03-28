@@ -15,6 +15,7 @@ costflist_2020$processor$Value <- costflist_2020$processor$Xn2020
 costflist_2021$processor$Value <- costflist_2021$processor$Xn2021
 costflist_2022$processor$Value <- costflist_2022$processor$Xn2022
 
+# note output per employee is taken from value in make_p_mults
 costflist_2017$processor$ShareC <- costflist_2017$processor$Xn2017/
   costflist_2017$processor$Xn2017[costflist_2017$processor$Type=="Revenue"]
 costflist_2018$processor$ShareC <- costflist_2018$processor$Xn2018/
