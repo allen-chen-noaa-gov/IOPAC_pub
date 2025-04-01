@@ -7,10 +7,10 @@ draws <- 1000
 set.seed(123)
 for(i in 2018:2021){
   load(file = paste0(here(), "\\data\\ticslist_", i, ".rda"))
-  
-  means <- read.csv(paste0(here(), "\\data\\", "costf_", i, ".csv"),
+
+  means <- read.csv(paste0(here(), "\\inst\\extdata\\", "costf_", i, ".csv"),
     row.names = 1)
-  sds <- read.csv(paste0(here(), "\\data\\", "costf_sd_", i, ".csv"),
+  sds <- read.csv(paste0(here(), "\\inst\\extdata\\", "costf_sd_", i, ".csv"),
     row.names = 1)
   draw.mats <- list(); output <- list()
   no.data <- colnames(means)[which(apply(means,2,sum)==0)]
@@ -52,9 +52,9 @@ for(i in 2018:2021){
 # Generate lognormal draws, produce multipliers for each year
 set.seed(123)
 for(i in 2018:2021){
-  means <- read.csv(paste0(here(), "\\data\\", "costf_", i, ".csv"),
+  means <- read.csv(paste0(here(), "\\inst\\extdata\\", "costf_", i, ".csv"),
     row.names=1)
-  sds <- read.csv(paste0(here(), "\\data\\", "costf_sd_", i, ".csv"),
+  sds <- read.csv(paste0(here(), "\\inst\\extdata\\", "costf_sd_", i, ".csv"),
     row.names=1)
   draw.mats <- list(); output <- list()
   no.data <- colnames(means)[which(apply(means,2,sum)==0)]

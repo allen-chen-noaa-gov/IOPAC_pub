@@ -43,7 +43,7 @@ inc05 <- ((quantile(unlist(incout), c(.025)))/1000000)/21
 emp95 <- ((quantile(unlist(empout), c(.975))))/21
 emp05 <- ((quantile(unlist(empout), c(.025))))/21
 
-poltab <- read.csv("data\\policyex.csv")
+poltab <- read.csv(paste0(here(), "\\inst\\extdata\\", "policyex.csv"))
 poltab <- poltab[poltab$Year < 2027, ]
 
 incnoaction <- data.frame(Year = poltab$Year, Income = incrat*poltab$NoAction,
@@ -67,7 +67,8 @@ ggplot(plotinc, aes(x=Year, y=Income, colour=Policy)) +
     geom_line(position=pd, size = 1) +
     geom_point(position=pd, shape=21, size=3, fill="white")
 
-ggsave("incomeex.png", width = 16, height = 9, units = "cm")
+ggsave(paste0(here(), "\\inst\\", "incomeex.png"), width = 16, height = 9,
+  units = "cm")
 
 empnoaction <- data.frame(Year = poltab$Year, Emp = emprat*poltab$NoAction,
   Emp025 = emp05*poltab$NoAction, Emp975 = emp95*poltab$NoAction, 
@@ -88,12 +89,13 @@ ggplot(plotemp, aes(x=Year, y=Emp, colour=Policy)) +
     geom_line(position=pd, size = 1) +
     geom_point(position=pd, shape=21, size=3, fill="white")
 
-ggsave("empex.png", width = 16, height = 9, units = "cm")
+ggsave(paste0(here(), "\\inst\\", "empex.png", width = 16, height = 9,
+  units = "cm")
 
 outtable <- data.frame(poltab, NoAction_Income = incrat*poltab$NoAction, 
   Alt1_Income = incrat*poltab$Alt1, Alt2_Income = incrat*poltab$Alt2,
   NoAction_Emp = emprat*poltab$NoAction, Alt1_Emp = emprat*poltab$Alt1, 
   Alt2_Emp = emprat*poltab$Alt2)
 
-write.table(outtable, file = 'policyextable.txt', col.names = TRUE,
-  row.names = FALSE, sep = "\t")
+write.table(outtable, file = paste0(here(), "\\inst\\", "policyextable.txt"),
+  col.names = TRUE, row.names = FALSE, sep = "\t")

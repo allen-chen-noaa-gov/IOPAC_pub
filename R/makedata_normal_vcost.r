@@ -99,8 +99,8 @@ sd[[i]] <- sd[[i]] %>% relocate(Cost)
 }
 
 lapply(1:length(means), function(i) write.csv(means[[i]], 
-  file = paste0(here(), "\\data\\", names(means[i]), ".csv"),
+  file = paste0(here(), "\\inst\\extdata\\", names(means[i]), ".csv"),
   row.names = FALSE)) # write 5 csv files for mean values
 lapply(1:length(sd), function(i) write.csv(sd[[i]], 
-  file = paste0(here(), "\\data\\", names(sd[i]), ".csv"),
+  file = paste0(here(), "\\inst\\extdata\\", names(sd[i]), ".csv"),
   row.names = FALSE)) # write 5 csv files for sd- plug into below
