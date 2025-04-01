@@ -2,14 +2,8 @@
 library(IOPAC);require(here);require(tidyverse)
 ################################################################################
 
-datadir <- file.path("..", "IOPAC_data")
-file_list <- list.files(datadir)
-for (i in 1:length(file_list)){
-  load(paste0(file.path("..", "IOPAC_data"), "/",  file_list[i]))
-}
-
 # Process raw values (rawvals_032725) to create shares:
-datadir <- "U:\\NWFSC_data_code\\IOPAC\\rawvals_032725"
+datadir <- ""
 
 temp <- setwd(datadir)
 temp <- list.files(pattern="*.csv")
@@ -26,12 +20,12 @@ rownames <- as.character(as.data.frame(files[[1]])[,1])
 #there was a transpose above that was messing me up
 files2<- lapply(files, function(x){data.frame((as.matrix(x))) })
 files2<-  lapply(files2, function(x){x[, -c(1)] })
-files2<-  lapply(files2, function(x){x<- x %>% mutate(Cost= costflist_2018$vessel$Cost, Type=Cost)})
+files2<-  lapply(files2, function(x){x<- x %>% mutate(Cost= costflist_template$vessel$Cost, Type=Cost)})
 # files2<-lapply(files2, function(x) x %>% relocate(Cost, .before = 'X1'))
 
 #No X1 in my data
 files2<-lapply(files2, function(x) x %>% relocate(Cost))
-colnames<- colnames(costflist_2022[[1]]) 
+colnames<- colnames(costflist_template[[1]]) 
 files2<- lapply(files2, setNames, colnames)
 
 sums<- files2[1:5]

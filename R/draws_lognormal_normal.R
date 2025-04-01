@@ -1,33 +1,6 @@
 ################################################################################
 library(IOPAC);require(here);require(tidyverse)
 # IOPAC with normal and log-normal draws:
-# Read in IOPAC data
-datadir <- file.path("..", "IOPAC_data") #in parent folder of package
-file_list <- list.files(datadir)
-for (i in 1:length(file_list)){
-  load(paste0(datadir, "/",  file_list[i]))
-}
-
-costflist_2017$processor$Value <- costflist_2017$processor$Xn2017
-costflist_2018$processor$Value <- costflist_2018$processor$Xn2018
-costflist_2019$processor$Value <- costflist_2019$processor$Xn2019
-costflist_2020$processor$Value <- costflist_2020$processor$Xn2020
-costflist_2021$processor$Value <- costflist_2021$processor$Xn2021
-costflist_2022$processor$Value <- costflist_2022$processor$Xn2022
-
-# note output per employee is taken from value in make_p_mults
-costflist_2017$processor$ShareC <- costflist_2017$processor$Xn2017/
-  costflist_2017$processor$Xn2017[costflist_2017$processor$Type=="Revenue"]
-costflist_2018$processor$ShareC <- costflist_2018$processor$Xn2018/
-  costflist_2018$processor$Xn2018[costflist_2018$processor$Type=="Revenue"]
-costflist_2019$processor$ShareC <- costflist_2019$processor$Xn2019/
-  costflist_2019$processor$Xn2019[costflist_2019$processor$Type=="Revenue"]
-costflist_2020$processor$ShareC <- costflist_2020$processor$Xn2020/
-  costflist_2020$processor$Xn2020[costflist_2020$processor$Type=="Revenue"]
-costflist_2021$processor$ShareC <- costflist_2021$processor$Xn2021/
-  costflist_2021$processor$Xn2021[costflist_2021$processor$Type=="Revenue"]
-costflist_2022$processor$ShareC <- costflist_2022$processor$Xn2022/
-  costflist_2022$processor$Xn2022[costflist_2022$processor$Type=="Revenue"]
 
 # Generate normal draws, produce multipliers for each year
 draws <- 1000
@@ -39,7 +12,7 @@ for(i in 2018:2021){
     row.names = 1)
   draw.mats <- list(); output <- list()
   no.data <- colnames(means)[which(apply(means,2,sum)==0)]
-  iopac.costs <- get(paste0("costflist_",i))
+  iopac.costs <- costflist_template
 
   for(j in 1:draws){
     draw.mats[[j]] <- matrix(NA,nrow=nrow(means),ncol=ncol(means))
@@ -83,7 +56,7 @@ for(i in 2018:2021){
     row.names=1)
   draw.mats <- list(); output <- list()
   no.data <- colnames(means)[which(apply(means,2,sum)==0)]
-  iopac.costs <- get(paste0("costflist_",i))
+  iopac.costs <- costflist_template
 
   for(j in 1:draws){
     draw.mats[[j]] <- matrix(NA,nrow=nrow(means),ncol=ncol(means))
