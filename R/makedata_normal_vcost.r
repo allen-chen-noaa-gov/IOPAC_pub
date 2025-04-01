@@ -2,6 +2,7 @@
 library(IOPAC);require(here);require(tidyverse)
 ################################################################################
 
+load(file = paste0(here(), "\\data\\costflist_template.rda"))
 # Process raw values (rawvals_032725) to create shares:
 datadir <- ""
 

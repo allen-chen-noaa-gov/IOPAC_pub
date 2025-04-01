@@ -1,11 +1,13 @@
 ################################################################################
 library(IOPAC);require(here);require(tidyverse)
 # IOPAC with normal and log-normal draws:
-
+load(file = paste0(here(), "\\data\\costflist_template.rda"))
 # Generate normal draws, produce multipliers for each year
 draws <- 1000
 set.seed(123)
 for(i in 2018:2021){
+  load(file = paste0(here(), "\\data\\ticslist_", i, ".rda"))
+  
   means <- read.csv(paste0(here(), "\\data\\", "costf_", i, ".csv"),
     row.names = 1)
   sds <- read.csv(paste0(here(), "\\data\\", "costf_sd_", i, ".csv"),

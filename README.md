@@ -23,45 +23,15 @@ here()
 #to reload the project
 #install("IOPAC")
 
-#I'm trying something a little funky here so we can keep the data separate
-#(allowing us to push things to a public Git).
-datadir <- file.path("..", "IOPAC_data")
-file_list <- list.files(datadir)
-for (i in 1:length(file_list)){
-  load(paste0(file.path("..", "IOPAC_data"), "/",  file_list[i]))
-}
-
-#I forgot to create a column when I was repulling the data, please excuse the
-#ugly code
-costflist_2017$processor$Value <- costflist_2017$processor$Xn2017
-costflist_2018$processor$Value <- costflist_2018$processor$Xn2018
-costflist_2019$processor$Value <- costflist_2019$processor$Xn2019
-costflist_2020$processor$Value <- costflist_2020$processor$Xn2020
-costflist_2021$processor$Value <- costflist_2021$processor$Xn2021
-costflist_2022$processor$Value <- costflist_2022$processor$Xn2022
-
-costflist_2017$processor$ShareC <- costflist_2017$processor$Xn2017/
-  costflist_2017$processor$Xn2017[costflist_2017$processor$Type=="Revenue"]
-costflist_2018$processor$ShareC <- costflist_2018$processor$Xn2018/
-  costflist_2018$processor$Xn2018[costflist_2018$processor$Type=="Revenue"]
-costflist_2019$processor$ShareC <- costflist_2019$processor$Xn2019/
-  costflist_2019$processor$Xn2019[costflist_2019$processor$Type=="Revenue"]
-costflist_2020$processor$ShareC <- costflist_2020$processor$Xn2020/
-  costflist_2020$processor$Xn2020[costflist_2020$processor$Type=="Revenue"]
-costflist_2021$processor$ShareC <- costflist_2021$processor$Xn2021/
-  costflist_2021$processor$Xn2021[costflist_2021$processor$Type=="Revenue"]
-costflist_2022$processor$ShareC <- costflist_2022$processor$Xn2022/
-  costflist_2022$processor$Xn2022[costflist_2022$processor$Type=="Revenue"]
+The wrapper function calls on eleven total inputs, two of which are optional. 
+The output is a (n*m) by 12 data frame, where the first three columns 
+correspond to the geographic region, sector, and name of sector for a 
+multiplier, where there are _n_ regions and _m_ sectors. Then, the remaining 9 
+columns correspond to the output, income, and employment multipliers for 
+vessels, processors, and their aggregate (total), for each region-sector. A 
+missing value denotes that there is an absence of data (e.g. fish tickets) for 
+that region-sector.
 ```
-
-The wrapper function calls on eleven total inputs, two of which are
-optional. The output is a (n\*m) by 12 data frame, where the first three
-columns correspond to the geographic region, sector, and name of sector
-for a multiplier, where there are *n* regions and *m* sectors. Then, the
-remaining 9 columns correspond to the output, income, and employment
-multipliers for vessels, processors, and their aggregate (total), for
-each region-sector. A missing value denotes that there is an absence of
-data (e.g. fish tickets) for that region-sector.
 
 ``` r
 library(IOPAC)
@@ -122,7 +92,7 @@ devation? Repeat for some number of iterations and average the results.
 
 Fish ticket data is treated similarly although I think the processing
 into proportions is done in make_v\_mults currently. The same intuition
-would apply although I’m unsure of the interaction between the two
+would apply although I am unsure of the interaction between the two
 random variables.
 
 ``` r
