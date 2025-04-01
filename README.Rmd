@@ -9,8 +9,8 @@ output:
 # IOPAC
 
 This is a repository containing the Input-Output model for Pacific Coast 
-Fisheries (IOPAC), created by [Jerry Leonard](https://www.google.com). This 
-model estimates gross changes in economic contributions and impacts due to 
+Fisheries (IOPAC), created by [Jerry Leonard](https://github.com/allen-chen-noaa-gov/IOPAC_pub/blob/a46601618ead7e6a9cec8d90021d2f4a10a198d5/inst/extdata/leonard_TM.pdf).
+This model estimates gross changes in economic contributions and impacts due to 
 changes in fishery harvests, for example from environmental or policy changes. 
 This readme documents the repository and provides a minimal reproducible 
 example.
