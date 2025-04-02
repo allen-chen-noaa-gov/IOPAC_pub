@@ -24,16 +24,16 @@ here()
 #You can setwd("..") to install it if you want but then it might be a good idea
 #to reload the project
 #install("IOPAC")
-
-The wrapper function calls on eleven total inputs, two of which are optional. 
-The output is a (n*m) by 12 data frame, where the first three columns 
-correspond to the geographic region, sector, and name of sector for a 
-multiplier, where there are _n_ regions and _m_ sectors. Then, the remaining 9 
-columns correspond to the output, income, and employment multipliers for 
-vessels, processors, and their aggregate (total), for each region-sector. A 
-missing value denotes that there is an absence of data (e.g. fish tickets) for 
-that region-sector.
 ```
+
+The wrapper function calls on eleven total inputs, two of which are
+optional. The output is a (n\*m) by 12 data frame, where the first three
+columns correspond to the geographic region, sector, and name of sector
+for a multiplier, where there are *n* regions and *m* sectors. Then, the
+remaining 9 columns correspond to the output, income, and employment
+multipliers for vessels, processors, and their aggregate (total), for
+each region-sector. A missing value denotes that there is an absence of
+data (e.g. fish tickets) for that region-sector.
 
 ``` r
 library(IOPAC)
