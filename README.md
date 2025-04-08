@@ -3,10 +3,12 @@
 # IOPAC
 
 This is a repository containing the Input-Output model for Pacific Coast
-Fisheries (IOPAC), created by Jerry Leonard. This model estimates gross
-changes in economic contributions and impacts due to changes in fishery
-harvests, for example from environmental or policy changes. This readme
-documents the repository and provides a minimal reproducible example.
+Fisheries (IOPAC), created by [Jerry
+Leonard](https://github.com/allen-chen-noaa-gov/IOPAC_pub/blob/main/inst/leonard_TM.pdf).
+This model estimates gross changes in economic contributions and impacts
+due to changes in fishery harvests, for example from environmental or
+policy changes. This readme documents the repository and provides a
+minimal reproducible example.
 
 ## Running the model
 
@@ -22,36 +24,6 @@ here()
 #You can setwd("..") to install it if you want but then it might be a good idea
 #to reload the project
 #install("IOPAC")
-
-#I'm trying something a little funky here so we can keep the data separate
-#(allowing us to push things to a public Git).
-datadir <- file.path("..", "IOPAC_data")
-file_list <- list.files(datadir)
-for (i in 1:length(file_list)){
-  load(paste0(file.path("..", "IOPAC_data"), "/",  file_list[i]))
-}
-
-#I forgot to create a column when I was repulling the data, please excuse the
-#ugly code
-costflist_2017$processor$Value <- costflist_2017$processor$Xn2017
-costflist_2018$processor$Value <- costflist_2018$processor$Xn2018
-costflist_2019$processor$Value <- costflist_2019$processor$Xn2019
-costflist_2020$processor$Value <- costflist_2020$processor$Xn2020
-costflist_2021$processor$Value <- costflist_2021$processor$Xn2021
-costflist_2022$processor$Value <- costflist_2022$processor$Xn2022
-
-costflist_2017$processor$ShareC <- costflist_2017$processor$Xn2017/
-  costflist_2017$processor$Xn2017[costflist_2017$processor$Type=="Revenue"]
-costflist_2018$processor$ShareC <- costflist_2018$processor$Xn2018/
-  costflist_2018$processor$Xn2018[costflist_2018$processor$Type=="Revenue"]
-costflist_2019$processor$ShareC <- costflist_2019$processor$Xn2019/
-  costflist_2019$processor$Xn2019[costflist_2019$processor$Type=="Revenue"]
-costflist_2020$processor$ShareC <- costflist_2020$processor$Xn2020/
-  costflist_2020$processor$Xn2020[costflist_2020$processor$Type=="Revenue"]
-costflist_2021$processor$ShareC <- costflist_2021$processor$Xn2021/
-  costflist_2021$processor$Xn2021[costflist_2021$processor$Type=="Revenue"]
-costflist_2022$processor$ShareC <- costflist_2022$processor$Xn2022/
-  costflist_2022$processor$Xn2022[costflist_2022$processor$Type=="Revenue"]
 ```
 
 The wrapper function calls on eleven total inputs, two of which are
@@ -122,7 +94,7 @@ devation? Repeat for some number of iterations and average the results.
 
 Fish ticket data is treated similarly although I think the processing
 into proportions is done in make_v\_mults currently. The same intuition
-would apply although I’m unsure of the interaction between the two
+would apply although I am unsure of the interaction between the two
 random variables.
 
 ``` r
