@@ -15,18 +15,21 @@ changes in fishery harvests, for example from environmental or policy changes.
 This readme documents the repository and provides a minimal reproducible 
 example.
 
-Work inside data submodule:
+How to use the data submodule: First work inside data submodule:
+```{git, eval=FALSE}
 cd data
 # make changes, add, commit, push
 git add .
 git commit -m "Your message for data submodule"
 git push
-
-Update the submodule reference in your main repo:
+```
+Then update the submodule reference in your main repo:
+```{git, eval=FALSE}
 cd ..
 git add data
 git commit -m "Update data submodule reference"
 git push
+```
 
 ## Running the model
 
