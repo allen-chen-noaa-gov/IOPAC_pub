@@ -1,5 +1,5 @@
 make_p_mults <- function(impbridge, costf, mults, type, sector, ticsin, ecpi,
-    taxes, procrec, prodflow, markups, fskey) {
+    taxes, prodflow, markups, fskey) {
     #' Create IOPAC processor multipliers
     #'
     #' A high-level wrapper function create impact multipliers
@@ -31,8 +31,6 @@ make_p_mults <- function(impbridge, costf, mults, type, sector, ticsin, ecpi,
     #'      is a data frame with rows for output, income, and employment, and
     #'      columns for each region. Only data for states (WA, OR, and CA) and
     #'      the west coast are included.
-    #' @param procrec A data frame with weights for commodity flows data from
-    #'      IMPLAN (impbridge), if used.
     #' @param prodflow A three column data frame denoting product flow. The
     #'      first column Region denotes the study area regions matching mults
     #'      and ticsin. The other two columns denote total supply and processor
@@ -67,7 +65,7 @@ lookmult <- lookmult[order(lookmult$ID), ]
 
 # D. Cost categories weighted by share of total cost, as well as within category
 # weights
-mapprod <- prodf$Share*prodf$ShareC*procrec
+mapprod <- prodf$Share*prodf$ShareC
 
 # E. Hypothetical impact that gets cancelled out at the end
 impact <- 1

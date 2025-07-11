@@ -1,14 +1,13 @@
 iopac_wrap <- function(impbridgein = impbridgelist,
   costfin = costflist_2020,
   multsin = mults,
-  ticsin = ticslist_2020,
+  ticsin = tics_list$y2021,
   ecpiin = ecpi,
   taxesin = taxes,
   prodflowin = prodflow,
   markupsin = markups_2020,
   fskeyin = fskey,
-  comnamesin = comnames,
-  procrecin = procrec) {
+  comnamesin = comnames) {
   #' Create all IOPAC multipliers
   #'
   #' A high-level wrapper function to create impact multipliers
@@ -49,16 +48,10 @@ iopac_wrap <- function(impbridgein = impbridgelist,
   #'      (Markups), commodity types (Sector), and various gear types.
   #' @param comnamesin A data frame denoting the relationship between
   #'      commodity types and corresponding commodity type codes, if used.
-  #' @param procrecin A data frame with weights for commodity flows data from
-  #'      IMPLAN (impbridgein), if used.
   #' @return A (n*m) by 12 data frame, where the first three columns
   #'      correspond to the geographic region, sector, and name of sector for
   #'      a multiplier, where there are *n* regions and *m* sectors.
   #' @export
-
-if (is.null(procrecin) == TRUE) {
-  procrecin <- rep(1, dim(impbridgein[["processor"]])[1])
-}
 
 results <- lapply(names(ticsin), function(i) {
   
@@ -83,7 +76,6 @@ results <- lapply(names(ticsin), function(i) {
       ticsin = ticsin[[i]],
       ecpi = ecpiin,
       taxes = taxesin,
-      procrec = procrecin,
       prodflow = prodflowin,
       markups = markupsin,
       fskey = fskeyin)
