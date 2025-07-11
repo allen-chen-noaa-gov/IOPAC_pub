@@ -8,14 +8,10 @@ output:
 
 # IOPAC
 
-This is a repository containing the Input-Output model for Pacific Coast 
-Fisheries (IOPAC), created by [Jerry Leonard](https://github.com/allen-chen-noaa-gov/IOPAC_pub/blob/main/inst/leonard_TM.pdf).
-This model estimates gross changes in economic contributions and impacts due to 
-changes in fishery harvests, for example from environmental or policy changes. 
-This readme documents the repository and provides a minimal reproducible 
-example.
+This is a repository containing the Input-Output model for Pacific Coast Fisheries (IOPAC), created by [Jerry Leonard](https://github.com/allen-chen-noaa-gov/IOPAC_pub/blob/main/inst/leonard_TM.pdf). This model estimates gross changes in economic contributions and impacts due to changes in fishery harvests, for example from environmental or policy changes. This readme documents the repository and provides a minimal reproducible example.
 
-How to use the data submodule: First work inside data submodule:
+## Data submodule
+Note that the data folder is in a private repository. Please contact allen.chen@noaa.gov for permissions. To push and pull from the data submodule, you can first work inside data submodule:
 ```{git, eval=FALSE}
 cd data
 # make changes, add, commit, push
@@ -47,14 +43,7 @@ here()
 #install("IOPAC")
 ```
 
-The wrapper function calls on eleven total inputs, two of which are optional. 
-The output is a (n*m) by 12 data frame, where the first three columns 
-correspond to the geographic region, sector, and name of sector for a 
-multiplier, where there are _n_ regions and _m_ sectors. Then, the remaining 9 
-columns correspond to the output, income, and employment multipliers for 
-vessels, processors, and their aggregate (total), for each region-sector. A 
-missing value denotes that there is an absence of data (e.g. fish tickets) for 
-that region-sector.
+The wrapper function calls on eleven total inputs, two of which are optional. The output is a (n*m) by 12 data frame, where the first three columns correspond to the geographic region, sector, and name of sector for a multiplier, where there are _n_ regions and _m_ sectors. Then, the remaining 9 columns correspond to the output, income, and employment multipliers for vessels, processors, and their aggregate (total), for each region-sector. A missing value denotes that there is an absence of data (e.g. fish tickets) for that region-sector.
 
 ```{r, eval=TRUE}
 library(IOPAC)
@@ -62,32 +51,21 @@ library(IOPAC)
 #head(multres)
 ```
 
-The wrapper function creates multipliers for the vessel and processor through 
-the functions `make_v_mults` and `make_p_mults` respectively. These can be used 
-to create individual multipliers instead if desired. Documentation for all 
-functions can be found by typing ?function, for example:
+The wrapper function creates multipliers for the vessel and processor through the functions `make_v_mults` and `make_p_mults` respectively. These can be used to create individual multipliers instead if desired. Documentation for all functions can be found by typing ?function, for example:
 
 ```{r, eval=FALSE}
 ?iopac_wrap
 ```
 
-Therefore, `make_v_mults` and `make_p_mults` create the multipliers, while
-`iopac_wrap` passes the relevant data to the functions.
+Therefore, `make_v_mults` and `make_p_mults` create the multipliers, while `iopac_wrap` passes the relevant data to the functions.
 
-The package also includes a number of data sets that can produce multipliers 
-for the West Coast region, and documentation for all included data can also be 
-found similarily (typing ?data). The default data used are the most most recent, 
-but the years 2018, 2019, and 2020 are included for cost, markup, and fish 
-ticket data where available. 
+The package also includes a number of data sets that can produce multipliers for the West Coast region, and documentation for all included data can also be found similarily (typing ?data). The default data used are the most most recent, but the years 2018, 2019, and 2020 are included for cost, markup, and fish ticket data where available.
 
 ```{r, eval=FALSE}
 #?ticslist_2020
 ```
 
-Therefore the user can create multipliers calibrating the model with costs or
-catches from different years, or use their own data if desired, as long as the 
-data matches the same format. For example, calibrating the model with cost, fish
-ticket, and processor markup data from 2019 below.
+Therefore the user can create multipliers calibrating the model with costs or catches from different years, or use their own data if desired, as long as the data matches the same format. For example, calibrating the model with cost, fish ticket, and processor markup data from 2019 below.
 
 ```{r, eval=TRUE}
 
@@ -99,26 +77,18 @@ ticket, and processor markup data from 2019 below.
 ```
 
 # Adding uncertainty
-I can think of at least three areas where we have a distribution for the data
-but only rely on means - fish tickets, costs, and processor markups. As an
-example the costs are currently the proportions each vessel spends on a
-category:
+I can think of at least three areas where we have a distribution for the data but only rely on means - fish tickets, costs, and processor markups. As an example the costs are currently the proportions each vessel spends on a category:
 
 ```{r, eval=TRUE}
 #head(costflist_2020[[1]])
 ```
 
-These are the averages *n* vessels. We could pull from a normally distributed
-random variable with these means and an associated standard devation? Repeat for
-some number of iterations and average the results.
+These are the averages *n* vessels. We could pull from a normally distributed random variable with these means and an associated standard devation? Repeat for some number of iterations and average the results.
 
-Fish ticket data is treated similarly although I think the processing into
-proportions is done in make_v_mults currently. The same intuition would apply
-although I am unsure of the interaction between the two random variables.
+Fish ticket data is treated similarly although I think the processing into proportions is done in make_v_mults currently. The same intuition would apply although I am unsure of the interaction between the two random variables.
 
 ```{r, eval=TRUE}
 #head(ticslist_2020[[1]])
 ```
 
-For both of these we could pull new data in iopac_wrap, and pass the pulled
-data into make_v_mults (instead of the current static data).
+For both of these we could pull new data in iopac_wrap, and pass the pulled data into make_v_mults (instead of the current static data).
