@@ -10,7 +10,12 @@ due to changes in fishery harvests, for example from environmental or
 policy changes. This readme documents the repository and provides a
 minimal reproducible example.
 
-How to use the data submodule: First work inside data submodule:
+## Data submodule
+
+Note that the data folder is in a private repository. Please contact
+<allen.chen@noaa.gov> for permissions. To push and pull from the data
+submodule, you can first work inside data submodule:
+
 ``` git
 cd data
 # make changes, add, commit, push
@@ -18,7 +23,9 @@ git add .
 git commit -m "Your message for data submodule"
 git push
 ```
+
 Then update the submodule reference in your main repo:
+
 ``` git
 cd ..
 git add data
