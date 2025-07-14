@@ -81,7 +81,8 @@ inteff <- colSums(mapprod*impact*as.matrix(lookmult[sector])) -
     sum(wcjermod[118:136, ])
 
 } else {
-    inteff <- colSums(mapprod*impact*as.matrix(lookmult[sector]), na.rm = T)
+    inteff <- colSums(mapprod*impact*as.matrix(lookmult[sector]), na.rm = TRUE)
+    # 3520 noncomparable imports is 0
 }
 
 # H. Calculate indirect impacts from EC

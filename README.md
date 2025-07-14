@@ -60,9 +60,39 @@ data (e.g. fish tickets) for that region-sector.
 
 ``` r
 library(IOPAC)
-#multres <- iopac_wrap()
-#head(multres)
+
+costflist_2023 <- costflist_template
+
+costflist_2023$vessel <- clean_cost_data()
+
+costflist_2023$processor <- clean_cost_data(sums = costf_P_list[["y2023"]],
+  type = "processor")
+
+multres <- iopac_wrap(costfin = costflist_2023)
+head(multres)
 ```
+
+    ##    Region                    Name Sector Vessel_output Vessel_income
+    ## 1 Astoria         Whiting, At Sea    529      0.000000     0.0000000
+    ## 2 Astoria          Whiting, Trawl    530      1.662108     0.8278427
+    ## 3 Astoria     Whiting, Fixed Gear    531      0.000000     0.0000000
+    ## 4 Astoria        Sablefish, Trawl    532      1.707345     0.8933801
+    ## 5 Astoria   Sablefish, Fixed Gear    533      1.631968     0.9725567
+    ## 6 Astoria Dover/Thornyhead, Trawl    534      1.708839     0.8996846
+    ##   Vessel_employment Processor_output Processor_income Processor_employment
+    ## 1      0.000000e+00              NaN              NaN                  NaN
+    ## 2      7.363272e-06         7.974554         2.790273         1.150247e-04
+    ## 3      0.000000e+00              NaN              NaN                  NaN
+    ## 4      8.419717e-06         3.178835         1.112265         4.585141e-05
+    ## 5      2.105472e-05         3.178835         1.112265         4.585141e-05
+    ## 6      8.513231e-06         3.387614         1.185316         4.886284e-05
+    ##     TotOut   TotInc       TotEmp
+    ## 1      NaN      NaN          NaN
+    ## 2 9.636662 3.618116 1.223880e-04
+    ## 3      NaN      NaN          NaN
+    ## 4 4.886179 2.005645 5.427112e-05
+    ## 5 4.810802 2.084822 6.690613e-05
+    ## 6 5.096454 2.085001 5.737607e-05
 
 The wrapper function creates multipliers for the vessel and processor
 through the functions `make_v_mults` and `make_p_mults` respectively.

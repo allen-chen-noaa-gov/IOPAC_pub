@@ -1,11 +1,11 @@
 iopac_wrap <- function(impbridgein = impbridgelist,
-  costfin = costflist_2020,
+  costfin = NULL,
   multsin = mults,
-  ticsin = tics_list$y2021,
+  ticsin = tics_list$y2023,
   ecpiin = ecpi,
   taxesin = taxes,
   prodflowin = prodflow,
-  markupsin = markups_2020,
+  markupsin = markups_list$y2023,
   fskeyin = fskey,
   comnamesin = comnames) {
   #' Create all IOPAC multipliers
@@ -89,6 +89,9 @@ results <- lapply(names(ticsin), function(i) {
   outmults$TotOut <- outmults$Vessel_output + outmults$Processor_output
   outmults$TotInc <- outmults$Vessel_income + outmults$Processor_income
   outmults$TotEmp <- outmults$Vessel_employment + outmults$Processor_employment
+
+  rownames(outmults) <- NULL
+  return(outmults)
 
 })
 

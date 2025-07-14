@@ -47,8 +47,16 @@ The wrapper function calls on eleven total inputs, two of which are optional. Th
 
 ```{r, eval=TRUE}
 library(IOPAC)
-#multres <- iopac_wrap()
-#head(multres)
+
+costflist_2023 <- costflist_template
+
+costflist_2023$vessel <- clean_cost_data()
+
+costflist_2023$processor <- clean_cost_data(sums = costf_P_list[["y2023"]],
+  type = "processor")
+
+multres <- iopac_wrap(costfin = costflist_2023)
+head(multres)
 ```
 
 The wrapper function creates multipliers for the vessel and processor through the functions `make_v_mults` and `make_p_mults` respectively. These can be used to create individual multipliers instead if desired. Documentation for all functions can be found by typing ?function, for example:
