@@ -34,19 +34,18 @@ Running the model can be done through the high-level wrapper function
 
 ```{r, eval=FALSE}
 library(devtools)
-library(dplyr)
 library(here)
 here()
 #The working directory should be the top level of the package.
-#You can setwd("..") to install it if you want but then it might be a good idea
-#to reload the project
-#install("IOPAC")
+#You can setwd("..") to install it if you want but then it might be a good idea to reload the project
+install("IOPAC")
 ```
 
 The wrapper function calls on eleven total inputs, two of which are optional. The output is a (n*m) by 12 data frame, where the first three columns correspond to the geographic region, sector, and name of sector for a multiplier, where there are _n_ regions and _m_ sectors. Then, the remaining 9 columns correspond to the output, income, and employment multipliers for vessels, processors, and their aggregate (total), for each region-sector. A missing value denotes that there is an absence of data (e.g. fish tickets) for that region-sector.
 
 ```{r, eval=TRUE}
 library(IOPAC)
+library(ggplot2)
 
 costflist_2023 <- costflist_template
 
@@ -57,6 +56,29 @@ costflist_2023$processor <- clean_cost_data(sums = costf_P_list[["y2023"]],
 
 multres <- iopac_wrap(costfin = costflist_2023)
 head(multres)
+
+multbounds <- make_mult_bounds()
+plotres <- multbounds[multbounds$Region %in% c("WC", "Washington", "Oregon",
+  "California"), ]
+plotres <- plotres[plotres$Name %in% c("Whiting, Trawl",
+  "Sablefish, Trawl", "Crab, Fixed Gear", "Salmon, Fixed Gear"), ]
+
+cols_to_check <- c("Perc_025", "Perc_500", "Perc_975")
+
+# Remove rows where selected columns are zero
+plotres <- plotres[rowSums(plotres[, cols_to_check] == 0) == 0, ]
+
+ggplot(plotres, aes(x = Name, y = Perc_500, color = Region)) +
+  geom_point(position=position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Perc_025, ymax = Perc_975), width = 0.2,
+    linetype = "dashed", position=position_dodge(width=0.5)) +
+  facet_wrap(~MultType, scales = "free") +
+  scale_y_continuous(limits = c(0, NA)) +
+  labs(title = "Multipliers by Region and Sector",
+    x = "Sector",
+    y = "Multiplier") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+
 ```
 
 The wrapper function creates multipliers for the vessel and processor through the functions `make_v_mults` and `make_p_mults` respectively. These can be used to create individual multipliers instead if desired. Documentation for all functions can be found by typing ?function, for example:
@@ -70,33 +92,33 @@ Therefore, `make_v_mults` and `make_p_mults` create the multipliers, while `iopa
 The package also includes a number of data sets that can produce multipliers for the West Coast region, and documentation for all included data can also be found similarily (typing ?data). The default data used are the most most recent, but the years 2018, 2019, and 2020 are included for cost, markup, and fish ticket data where available.
 
 ```{r, eval=FALSE}
-#?ticslist_2020
+?ticslist_2020
 ```
 
 Therefore the user can create multipliers calibrating the model with costs or catches from different years, or use their own data if desired, as long as the data matches the same format. For example, calibrating the model with cost, fish ticket, and processor markup data from 2019 below.
 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 
-#multres <- iopac_wrap(costfin = costflist_2020, ticsin = ticslist_2020, 
-#	markupsin = markups_2020)
+multres <- iopac_wrap(costfin = costflist_2020, ticsin = ticslist_2020, 
+	markupsin = markups_2020)
 
-#subset(multres, Region == 'WC' & Name == 'Whiting, Trawl')$Processor_income
+subset(multres, Region == 'WC' & Name == 'Whiting, Trawl')$Processor_income
 
 ```
 
 # Adding uncertainty
 I can think of at least three areas where we have a distribution for the data but only rely on means - fish tickets, costs, and processor markups. As an example the costs are currently the proportions each vessel spends on a category:
 
-```{r, eval=TRUE}
-#head(costflist_2020[[1]])
+```{r, eval=FALSE}
+head(costflist_2020[[1]])
 ```
 
 These are the averages *n* vessels. We could pull from a normally distributed random variable with these means and an associated standard devation? Repeat for some number of iterations and average the results.
 
 Fish ticket data is treated similarly although I think the processing into proportions is done in make_v_mults currently. The same intuition would apply although I am unsure of the interaction between the two random variables.
 
-```{r, eval=TRUE}
-#head(ticslist_2020[[1]])
+```{r, eval=FALSE}
+head(ticslist_2020[[1]])
 ```
 
 For both of these we could pull new data in iopac_wrap, and pass the pulled data into make_v_mults (instead of the current static data).

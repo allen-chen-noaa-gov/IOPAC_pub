@@ -40,13 +40,11 @@ Running the model can be done through the high-level wrapper function
 
 ``` r
 library(devtools)
-library(dplyr)
 library(here)
 here()
 #The working directory should be the top level of the package.
-#You can setwd("..") to install it if you want but then it might be a good idea
-#to reload the project
-#install("IOPAC")
+#You can setwd("..") to install it if you want but then it might be a good idea to reload the project
+install("IOPAC")
 ```
 
 The wrapper function calls on eleven total inputs, two of which are
@@ -60,6 +58,7 @@ data (e.g. fish tickets) for that region-sector.
 
 ``` r
 library(IOPAC)
+library(ggplot2)
 
 costflist_2023 <- costflist_template
 
@@ -94,6 +93,32 @@ head(multres)
     ## 5 4.810802 2.084822 6.690613e-05
     ## 6 5.096454 2.085001 5.737607e-05
 
+``` r
+multbounds <- make_mult_bounds()
+plotres <- multbounds[multbounds$Region %in% c("WC", "Washington", "Oregon",
+  "California"), ]
+plotres <- plotres[plotres$Name %in% c("Whiting, Trawl",
+  "Sablefish, Trawl", "Crab, Fixed Gear", "Salmon, Fixed Gear"), ]
+
+cols_to_check <- c("Perc_025", "Perc_500", "Perc_975")
+
+# Remove rows where selected columns are zero
+plotres <- plotres[rowSums(plotres[, cols_to_check] == 0) == 0, ]
+
+ggplot(plotres, aes(x = Name, y = Perc_500, color = Region)) +
+  geom_point(position=position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Perc_025, ymax = Perc_975), width = 0.2,
+    linetype = "dashed", position=position_dodge(width=0.5)) +
+  facet_wrap(~MultType, scales = "free") +
+  scale_y_continuous(limits = c(0, NA)) +
+  labs(title = "Multipliers by Region and Sector",
+    x = "Sector",
+    y = "Multiplier") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
+
 The wrapper function creates multipliers for the vessel and processor
 through the functions `make_v_mults` and `make_p_mults` respectively.
 These can be used to create individual multipliers instead if desired.
@@ -114,7 +139,7 @@ data used are the most most recent, but the years 2018, 2019, and 2020
 are included for cost, markup, and fish ticket data where available.
 
 ``` r
-#?ticslist_2020
+?ticslist_2020
 ```
 
 Therefore the user can create multipliers calibrating the model with
@@ -124,10 +149,10 @@ the model with cost, fish ticket, and processor markup data from 2019
 below.
 
 ``` r
-#multres <- iopac_wrap(costfin = costflist_2020, ticsin = ticslist_2020, 
-#   markupsin = markups_2020)
+multres <- iopac_wrap(costfin = costflist_2020, ticsin = ticslist_2020, 
+    markupsin = markups_2020)
 
-#subset(multres, Region == 'WC' & Name == 'Whiting, Trawl')$Processor_income
+subset(multres, Region == 'WC' & Name == 'Whiting, Trawl')$Processor_income
 ```
 
 # Adding uncertainty
@@ -138,7 +163,7 @@ markups. As an example the costs are currently the proportions each
 vessel spends on a category:
 
 ``` r
-#head(costflist_2020[[1]])
+head(costflist_2020[[1]])
 ```
 
 These are the averages *n* vessels. We could pull from a normally
@@ -151,7 +176,7 @@ would apply although I am unsure of the interaction between the two
 random variables.
 
 ``` r
-#head(ticslist_2020[[1]])
+head(ticslist_2020[[1]])
 ```
 
 For both of these we could pull new data in iopac_wrap, and pass the
