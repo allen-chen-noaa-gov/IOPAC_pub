@@ -4,6 +4,11 @@ output:
     variant: markdown_github
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.path = "man/figures/README-", echo = TRUE,
+  warning = FALSE, message = FALSE)
+```
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # IOPAC
@@ -56,10 +61,14 @@ costflist_2023$processor <- clean_cost_data(sums = costf_P_list[["y2023"]],
 
 multres <- iopac_wrap(costfin = costflist_2023)
 head(multres)
+```
 
+There is also a bounds function.
+
+```{r, eval=TRUE}
 multbounds <- make_mult_bounds()
-plotres <- multbounds[multbounds$Region %in% c("WC", "Washington", "Oregon",
-  "California"), ]
+plotres <- multbounds[multbounds$Region %in% c("WC", "Oregon",
+  "Newport"), ]
 plotres <- plotres[plotres$Name %in% c("Whiting, Trawl",
   "Sablefish, Trawl", "Crab, Fixed Gear", "Salmon, Fixed Gear"), ]
 
@@ -78,7 +87,6 @@ ggplot(plotres, aes(x = Name, y = Perc_500, color = Region)) +
     x = "Sector",
     y = "Multiplier") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
-
 ```
 
 The wrapper function creates multipliers for the vessel and processor through the functions `make_v_mults` and `make_p_mults` respectively. These can be used to create individual multipliers instead if desired. Documentation for all functions can be found by typing ?function, for example:

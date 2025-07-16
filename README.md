@@ -93,10 +93,12 @@ head(multres)
     ## 5 4.810802 2.084822 6.690613e-05
     ## 6 5.096454 2.085001 5.737607e-05
 
+There is also a bounds function.
+
 ``` r
 multbounds <- make_mult_bounds()
-plotres <- multbounds[multbounds$Region %in% c("WC", "Washington", "Oregon",
-  "California"), ]
+plotres <- multbounds[multbounds$Region %in% c("WC", "Oregon",
+  "Newport"), ]
 plotres <- plotres[plotres$Name %in% c("Whiting, Trawl",
   "Sablefish, Trawl", "Crab, Fixed Gear", "Salmon, Fixed Gear"), ]
 
@@ -117,7 +119,7 @@ ggplot(plotres, aes(x = Name, y = Perc_500, color = Region)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](man/figures/README-unnamed-chunk-5-1.png)
 
 The wrapper function creates multipliers for the vessel and processor
 through the functions `make_v_mults` and `make_p_mults` respectively.
