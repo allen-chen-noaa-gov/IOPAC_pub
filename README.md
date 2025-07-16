@@ -93,7 +93,11 @@ head(multres)
     ## 5 4.810802 2.084822 6.690613e-05
     ## 6 5.096454 2.085001 5.737607e-05
 
-There is also a bounds function.
+There is also a bounds function, depicting the central tendency and
+uncertainty of the multipliers. The bounds are calculated using the
+2.5th, 50th, and 97.5th percentiles of the multipliers, which can be
+used to visualize the uncertainty in the multipliers. An example for
+specific regions and sectors is shown below.
 
 ``` r
 multbounds <- make_mult_bounds()
@@ -137,11 +141,11 @@ while `iopac_wrap` passes the relevant data to the functions.
 The package also includes a number of data sets that can produce
 multipliers for the West Coast region, and documentation for all
 included data can also be found similarily (typing ?data). The default
-data used are the most most recent, but the years 2018, 2019, and 2020
-are included for cost, markup, and fish ticket data where available.
+data used are the most most recent, but the years 2017 through 2023 are
+included for cost, markup, and fish ticket data where available.
 
 ``` r
-?ticslist_2020
+?prodflow
 ```
 
 Therefore the user can create multipliers calibrating the model with
@@ -151,35 +155,15 @@ the model with cost, fish ticket, and processor markup data from 2019
 below.
 
 ``` r
-multres <- iopac_wrap(costfin = costflist_2020, ticsin = ticslist_2020, 
-    markupsin = markups_2020)
+costflist_2017 <- costflist_template
+costflist_2017$vessel <- clean_cost_data()
+costflist_2017$processor <- clean_cost_data(sums = costf_P_list[["y2017"]],
+  type = "processor")
+
+multres <- iopac_wrap(costfin = costflist_2017, ticsin = tics_list$y2017, 
+    markupsin = markups_list$y2017)
 
 subset(multres, Region == 'WC' & Name == 'Whiting, Trawl')$Processor_income
 ```
 
-# Adding uncertainty
-
-I can think of at least three areas where we have a distribution for the
-data but only rely on means - fish tickets, costs, and processor
-markups. As an example the costs are currently the proportions each
-vessel spends on a category:
-
-``` r
-head(costflist_2020[[1]])
-```
-
-These are the averages *n* vessels. We could pull from a normally
-distributed random variable with these means and an associated standard
-devation? Repeat for some number of iterations and average the results.
-
-Fish ticket data is treated similarly although I think the processing
-into proportions is done in make_v\_mults currently. The same intuition
-would apply although I am unsure of the interaction between the two
-random variables.
-
-``` r
-head(ticslist_2020[[1]])
-```
-
-For both of these we could pull new data in iopac_wrap, and pass the
-pulled data into make_v\_mults (instead of the current static data).
+    ## [1] 2.888361
