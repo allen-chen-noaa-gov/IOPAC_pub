@@ -5,10 +5,10 @@
 This is a repository containing the Input-Output model for Pacific Coast
 Fisheries (IOPAC), created by [Jerry
 Leonard](https://github.com/allen-chen-noaa-gov/IOPAC_pub/blob/main/inst/leonard_TM.pdf).
-This model estimates gross changes in economic contributions and impacts
-due to changes in fishery harvests, for example from environmental or
-policy changes. This readme documents the repository and provides a
-minimal reproducible example.
+This model estimates gross changes in economic contributions due to
+changes in fishery harvests, for example from environmental or policy
+changes. This readme documents the repository and provides a minimal
+reproducible example.
 
 ## Data submodule
 
@@ -43,7 +43,6 @@ library(devtools)
 library(here)
 here()
 #The working directory should be the top level of the package.
-#You can setwd("..") to install it if you want but then it might be a good idea to reload the project
 install("IOPAC")
 ```
 
@@ -96,8 +95,8 @@ head(multres)
 There is also a bounds function, depicting the central tendency and
 uncertainty of the multipliers. The bounds are calculated using the
 2.5th, 50th, and 97.5th percentiles of the multipliers, which can be
-used to visualize the uncertainty in the multipliers. An example for
-specific regions and sectors is shown below.
+used to visualize bounds for the multipliers. An example for specific
+regions and sectors is shown below.
 
 ``` r
 multbounds <- make_mult_bounds()
@@ -108,7 +107,6 @@ plotres <- plotres[plotres$Name %in% c("Whiting, Trawl",
 
 cols_to_check <- c("Perc_025", "Perc_500", "Perc_975")
 
-# Remove rows where selected columns are zero
 plotres <- plotres[rowSums(plotres[, cols_to_check] == 0) == 0, ]
 
 ggplot(plotres, aes(x = Name, y = Perc_500, color = Region)) +
@@ -151,7 +149,7 @@ included for cost, markup, and fish ticket data where available.
 Therefore the user can create multipliers calibrating the model with
 costs or catches from different years, or use their own data if desired,
 as long as the data matches the same format. For example, calibrating
-the model with cost, fish ticket, and processor markup data from 2019
+the model with cost, fish ticket, and processor markup data from 2017
 below.
 
 ``` r
@@ -160,10 +158,38 @@ costflist_2017$vessel <- clean_cost_data()
 costflist_2017$processor <- clean_cost_data(sums = costf_P_list[["y2017"]],
   type = "processor")
 
-multres <- iopac_wrap(costfin = costflist_2017, ticsin = tics_list$y2017, 
+multres <- iopac_wrap(costfin = costflist_2017, ticsin = tics_list$y2017,
     markupsin = markups_list$y2017)
 
 subset(multres, Region == 'WC' & Name == 'Whiting, Trawl')$Processor_income
 ```
 
     ## [1] 2.888361
+
+## Recreational multipliers
+
+Recreational multipliers can now also be called within the package. Note
+that while the commercial multipliers are contributions per dollar of
+catch revenue, the recreational multipliers are dollars per trip.
+
+``` r
+make_rec()
+```
+
+    ##                     Region State TripType   Output    Income   Employment
+    ## 1        California Whole     CA      PRI 391.8962 183.36900 0.0015324098
+    ## 2          NCC MendSonoma     CA      PRI 225.9484 111.17791 0.0013148139
+    ## 3             NCC SanFran     CA      PRI 296.4262 146.82627 0.0010485342
+    ## 4             North Coast     CA      PRI 212.0076 102.40103 0.0013022233
+    ## 5                     SCC     CA      PRI 254.1711 122.87852 0.0013468058
+    ## 6             South Coast     CA      PRI 367.6591 170.98867 0.0014970812
+    ## 7                 Astoria     OR      PRI 243.6394 128.68060 0.0017037278
+    ## 8               Brookings     OR      PRI 224.0572  97.64068 0.0018908185
+    ## 9                Coos Bay     OR      PRI 284.0518 141.54578 0.0019941460
+    ## 10                Newport     OR      PRI 210.5362  99.79653 0.0017958974
+    ## 11           Oregon Whole     OR      PRI 294.3288 155.33293 0.0019596400
+    ## 12              Tillamook     OR      PRI 233.5345 110.03726 0.0017449388
+    ## 13 North Washington Coast     WA      PRI 164.7069  86.36141 0.0010724934
+    ## 14            Puget Sound     WA      PRI 341.0212 167.91170 0.0011626563
+    ## 15 South Washington Coast     WA      PRI 188.6170  95.31901 0.0009755918
+    ## 16       Washington Whole     WA      PRI 345.4777 164.88984 0.0012203439

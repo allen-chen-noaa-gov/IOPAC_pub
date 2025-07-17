@@ -13,7 +13,7 @@ knitr::opts_chunk$set(fig.path = "man/figures/README-", echo = TRUE,
 
 # IOPAC
 
-This is a repository containing the Input-Output model for Pacific Coast Fisheries (IOPAC), created by [Jerry Leonard](https://github.com/allen-chen-noaa-gov/IOPAC_pub/blob/main/inst/leonard_TM.pdf). This model estimates gross changes in economic contributions and impacts due to changes in fishery harvests, for example from environmental or policy changes. This readme documents the repository and provides a minimal reproducible example.
+This is a repository containing the Input-Output model for Pacific Coast Fisheries (IOPAC), created by [Jerry Leonard](https://github.com/allen-chen-noaa-gov/IOPAC_pub/blob/main/inst/leonard_TM.pdf). This model estimates gross changes in economic contributions due to changes in fishery harvests, for example from environmental or policy changes. This readme documents the repository and provides a minimal reproducible example.
 
 ## Data submodule
 Note that the data folder is in a private repository. Please contact allen.chen@noaa.gov for permissions. To push and pull from the data submodule, you can first work inside data submodule:
@@ -42,7 +42,6 @@ library(devtools)
 library(here)
 here()
 #The working directory should be the top level of the package.
-#You can setwd("..") to install it if you want but then it might be a good idea to reload the project
 install("IOPAC")
 ```
 
@@ -63,7 +62,7 @@ multres <- iopac_wrap(costfin = costflist_2023)
 head(multres)
 ```
 
-There is also a bounds function, depicting the central tendency and uncertainty of the multipliers. The bounds are calculated using the 2.5th, 50th, and 97.5th percentiles of the multipliers, which can be used to visualize the uncertainty in the multipliers. An example for specific regions and sectors is shown below.
+There is also a bounds function, depicting the central tendency and uncertainty of the multipliers. The bounds are calculated using the 2.5th, 50th, and 97.5th percentiles of the multipliers, which can be used to visualize bounds for the multipliers. An example for specific regions and sectors is shown below.
 
 ```{r, eval=FALSE}
 multbounds <- make_mult_bounds()
@@ -74,7 +73,6 @@ plotres <- plotres[plotres$Name %in% c("Whiting, Trawl",
 
 cols_to_check <- c("Perc_025", "Perc_500", "Perc_975")
 
-# Remove rows where selected columns are zero
 plotres <- plotres[rowSums(plotres[, cols_to_check] == 0) == 0, ]
 
 ggplot(plotres, aes(x = Name, y = Perc_500, color = Region)) +
@@ -105,7 +103,7 @@ The package also includes a number of data sets that can produce multipliers for
 ?prodflow
 ```
 
-Therefore the user can create multipliers calibrating the model with costs or catches from different years, or use their own data if desired, as long as the data matches the same format. For example, calibrating the model with cost, fish ticket, and processor markup data from 2019 below.
+Therefore the user can create multipliers calibrating the model with costs or catches from different years, or use their own data if desired, as long as the data matches the same format. For example, calibrating the model with cost, fish ticket, and processor markup data from 2017 below.
 
 ```{r, eval=TRUE}
 costflist_2017 <- costflist_template
@@ -113,8 +111,16 @@ costflist_2017$vessel <- clean_cost_data()
 costflist_2017$processor <- clean_cost_data(sums = costf_P_list[["y2017"]],
   type = "processor")
 
-multres <- iopac_wrap(costfin = costflist_2017, ticsin = tics_list$y2017, 
+multres <- iopac_wrap(costfin = costflist_2017, ticsin = tics_list$y2017,
 	markupsin = markups_list$y2017)
 
 subset(multres, Region == 'WC' & Name == 'Whiting, Trawl')$Processor_income
+```
+
+## Recreational multipliers
+
+Recreational multipliers can now also be called within the package. Note that while the commercial multipliers are contributions per dollar of catch revenue, the recreational multipliers are dollars per trip.
+
+```{r, eval=TRUE}
+make_rec()
 ```
