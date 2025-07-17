@@ -2,9 +2,10 @@ clean_cost_data <- function(sums = costf_V_list[["y2023"]],
   counts = costf_V_count_list[["y2023"]],
   confdel = costf_V_countv_list[["y2023"]],
   sd = costf_V_sd_list[["y2023"]],
-  type = "percs") {
+  functype = "vessel",
+  costtype = "percs") {
 
-  if (type == "processor") {
+  if (functype == "processor") {
     
     colnames(sums)[grepl("Xn", colnames(sums))] <- "Value"
 
@@ -21,7 +22,7 @@ clean_cost_data <- function(sums = costf_V_list[["y2023"]],
 
     return(sums)
 
-  } else {
+  } else if (functype == "vessel") {
   # vessel costs
   
   # Replace counts with counts from REV row
@@ -59,7 +60,7 @@ clean_cost_data <- function(sums = costf_V_list[["y2023"]],
   sdout <- sdconf %>%
     relocate(Cost)
 
-  if (type == "percs") {
+  if (costtype == "percs") {
 
     percs <- means
     # Divide all values except for first column by the values in row REV, except for rows REV and CREW
@@ -93,7 +94,7 @@ clean_cost_data <- function(sums = costf_V_list[["y2023"]],
 
     return(percs)
 
-  } else {
+  } else if (costtype == "means") {
 
     return(list(means = means, sd = sdout))
 

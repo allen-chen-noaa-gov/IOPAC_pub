@@ -61,10 +61,10 @@ library(ggplot2)
 
 costflist_2023 <- costflist_template
 
-costflist_2023$vessel <- clean_cost_data()
+costflist_2023$vessel <- clean_cost_data(functype = "vessel")
 
 costflist_2023$processor <- clean_cost_data(sums = costf_P_list[["y2023"]],
-  type = "processor")
+  functype = "processor")
 
 multres <- iopac_wrap(costfin = costflist_2023)
 head(multres)
@@ -154,9 +154,10 @@ below.
 
 ``` r
 costflist_2017 <- costflist_template
-costflist_2017$vessel <- clean_cost_data()
+costflist_2017$vessel <- clean_cost_data(sums = costf_V_list[["y2017"]],
+  functype = "vessel")
 costflist_2017$processor <- clean_cost_data(sums = costf_P_list[["y2017"]],
-  type = "processor")
+  functype = "processor")
 
 multres <- iopac_wrap(costfin = costflist_2017, ticsin = tics_list$y2017,
     markupsin = markups_list$y2017)

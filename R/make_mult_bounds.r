@@ -1,9 +1,9 @@
-make_mult_bounds <- function(datain = clean_cost_data(type="vessel"),
+make_mult_bounds <- function(
+  datain = clean_cost_data(functype="vessel", costtype="means"),
   ticsin = tics_list$y2023,
   markupsin = markups_list$y2023,
   draws = 300,
-  seed = 42,
-  type = "percs") {
+  seed = 42) {
 
     set.seed(seed)
 
@@ -54,7 +54,7 @@ make_mult_bounds <- function(datain = clean_cost_data(type="vessel"),
       dataout <- replace(dataout, is.na(dataout), 0)
       iopac.costs$vessel[, colnames(dataout)] <- dataout
       iopac.costs$processor <- clean_cost_data(sums = costf_P_list[["y2023"]],
-        type = "processor")
+        functype = "processor")
       output[[j]] <- iopac_wrap(costfin=iopac.costs, ticsin=ticsin,
         markupsin=markupsin)
     }
