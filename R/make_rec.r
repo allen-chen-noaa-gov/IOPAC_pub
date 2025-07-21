@@ -21,7 +21,7 @@ make_rec <- function(recdata = rec_survey_data,
   recmult$State <- sub("_.*", "", recmult$Region)
   recmult$Region <- gsub("^[^_]*_[^_]*_", "", recmult$Region)
 
-  #FH needs to include charter contributions
+  #do PRI first, FH needs to include charter contributions
   dataout <- merge(recmult[recmult$TripType == "PRI", ], recdataexp,
     by = c("State", "TripType"))
   dataout$OutputPerExpense <- dataout$Output / dataout$TotExpenses
@@ -30,15 +30,88 @@ make_rec <- function(recdata = rec_survey_data,
 
   inflation <- 1
 
-  dataout <- merge(dataout, recdata[recdata$Cat == "Trips",
+  pridataout <- merge(dataout, recdata[recdata$Cat == "Trips",
     c("State", "TripType", "Total")], by = c("State", "TripType"))
-  dataout$DolPerTrip <- (dataout$TotExpenses*inflation) / dataout$Total
+  pridataout$DolPerTrip <- (pridataout$TotExpenses*inflation) / pridataout$Total
 
-  dataout$Output <- dataout$OutputPerExpense * dataout$DolPerTrip
-  dataout$Income <- dataout$IncomePerExpense * dataout$DolPerTrip
-  dataout$Employment <- dataout$EmploymentPerExpense * dataout$DolPerTrip
+  pridataout$Output <- pridataout$OutputPerExpense * pridataout$DolPerTrip
+  pridataout$Income <- pridataout$IncomePerExpense * pridataout$DolPerTrip
+  pridataout$Employment <- pridataout$EmploymentPerExpense *
+    pridataout$DolPerTrip
 
-  return(dataout[, c("Region", "State", "TripType", "Output", "Income",
-    "Employment")])
+  #now do FH
+  dataout <- merge(recmult[recmult$TripType == "FH", ], recdataexp,
+    by = c("State", "TripType"))
+
+  inflation <- 1
+
+  fhdataout <- merge(dataout, recdata[recdata$Cat == "Trips",
+    c("State", "TripType", "Total")], by = c("State", "TripType"))
+  fhdataout$DolPerTrip <- (fhdataout$TotExpenses*inflation) / fhdataout$Total
+
+  costf_charter$WA <- costf_charter$WA.and.OR
+  costf_charter$OR <- costf_charter$WA.and.OR
+
+  results <- setNames(lapply((unique(fhdataout$State)), function(j) {
+    
+    if (j == "CA") {
+      i <- "California"
+    } else if (j == "OR") {
+      i <- "Oregon"
+    } else if (j == "WA") {
+      i <- "Washington"
+    }
+
+    Vessel <- lapply(c("Output", "Income", "Employment"), function(type) {
+      max(make_v_mults(impbridge = impbridgelist[["charter"]],
+        costf = costf_charter[(colnames(costf_charter) %in% c("Type", j))],
+        mults = mults[[type]],
+        type = type,
+        sector = i,
+        ticsin = tics_list$y2023[[i]],
+        ecpi = ecpi,
+        taxes = taxes))
+    })
+  
+  names(Vessel) <- paste0("Charter_", c("output", "income", "employment"))
+
+  return(data.frame(do.call(cbind, Vessel)))
+
+  }), unique(fhdataout$State))
+
+  chartermults <- bind_rows(results, .id = "State")
+
+  fhdataoutwchart <- merge(fhdataout, chartermults, by = c("State"))
+
+  guideexp <- recdata[recdata$Cat == c("Guide fees", "Crew tips"), ] %>%
+    group_by(State,, TripType) %>%
+    summarise(GuideExp = sum(Total))
+
+  fhdataoutwchart <- merge(fhdataoutwchart, guideexp,
+    by = c("State", "TripType")) %>%
+    mutate(FHoutput = Charter_output*GuideExp,
+           FHincome = Charter_income*GuideExp,
+           FHemployment = Charter_employment*GuideExp) %>%
+    mutate(TotOutput = Output + FHoutput,
+           TotIncome = Income + FHincome,
+           TotEmployment = Employment + FHemployment)
+
+  fhdataoutwchart$OutputPerExpense <- fhdataoutwchart$TotOutput /
+    fhdataoutwchart$TotExpenses
+  fhdataoutwchart$IncomePerExpense <- fhdataoutwchart$TotIncome /
+    fhdataoutwchart$TotExpenses
+  fhdataoutwchart$EmploymentPerExpense <- fhdataoutwchart$TotEmployment /
+    fhdataoutwchart$TotExpenses
+  fhdataoutwchart$Output <- fhdataoutwchart$OutputPerExpense *
+    fhdataoutwchart$DolPerTrip
+  fhdataoutwchart$Income <- fhdataoutwchart$IncomePerExpense *
+    fhdataoutwchart$DolPerTrip
+  fhdataoutwchart$Employment <- fhdataoutwchart$EmploymentPerExpense *
+    fhdataoutwchart$DolPerTrip
+
+  return(rbind(pridataout[, c("Region", "State", "TripType", "Output", "Income",
+    "Employment")],
+    fhdataoutwchart[, c("Region", "State", "TripType", "Output", "Income",
+    "Employment")]))
 
   }

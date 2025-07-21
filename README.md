@@ -42,8 +42,8 @@ Running the model can be done through the high-level wrapper function
 library(devtools)
 library(here)
 here()
-#The working directory should be the top level of the package.
-install("IOPAC")
+#The working directory should be the top level of the package. Go up one to install.
+install(here("..", "IOPAC_pub"))
 ```
 
 The wrapper function calls on eleven total inputs, two of which are
@@ -56,6 +56,7 @@ each region-sector. A missing value denotes that there is an absence of
 data (e.g. fish tickets) for that region-sector.
 
 ``` r
+#Note package name is IOPAC
 library(IOPAC)
 library(ggplot2)
 
@@ -177,20 +178,36 @@ catch revenue, the recreational multipliers are dollars per trip.
 make_rec()
 ```
 
-    ##                     Region State TripType   Output    Income   Employment
-    ## 1        California Whole     CA      PRI 391.8962 183.36900 0.0015324098
-    ## 2          NCC MendSonoma     CA      PRI 225.9484 111.17791 0.0013148139
-    ## 3             NCC SanFran     CA      PRI 296.4262 146.82627 0.0010485342
-    ## 4             North Coast     CA      PRI 212.0076 102.40103 0.0013022233
-    ## 5                     SCC     CA      PRI 254.1711 122.87852 0.0013468058
-    ## 6             South Coast     CA      PRI 367.6591 170.98867 0.0014970812
-    ## 7                 Astoria     OR      PRI 243.6394 128.68060 0.0017037278
-    ## 8               Brookings     OR      PRI 224.0572  97.64068 0.0018908185
-    ## 9                Coos Bay     OR      PRI 284.0518 141.54578 0.0019941460
-    ## 10                Newport     OR      PRI 210.5362  99.79653 0.0017958974
-    ## 11           Oregon Whole     OR      PRI 294.3288 155.33293 0.0019596400
-    ## 12              Tillamook     OR      PRI 233.5345 110.03726 0.0017449388
-    ## 13 North Washington Coast     WA      PRI 164.7069  86.36141 0.0010724934
-    ## 14            Puget Sound     WA      PRI 341.0212 167.91170 0.0011626563
-    ## 15 South Washington Coast     WA      PRI 188.6170  95.31901 0.0009755918
-    ## 16       Washington Whole     WA      PRI 345.4777 164.88984 0.0012203439
+    ##                     Region State TripType    Output    Income   Employment
+    ## 1        California Whole     CA      PRI  391.8962 183.36900 0.0015324098
+    ## 2          NCC MendSonoma     CA      PRI  225.9484 111.17791 0.0013148139
+    ## 3             NCC SanFran     CA      PRI  296.4262 146.82627 0.0010485342
+    ## 4             North Coast     CA      PRI  212.0076 102.40103 0.0013022233
+    ## 5                     SCC     CA      PRI  254.1711 122.87852 0.0013468058
+    ## 6             South Coast     CA      PRI  367.6591 170.98867 0.0014970812
+    ## 7                 Astoria     OR      PRI  243.6394 128.68060 0.0017037278
+    ## 8               Brookings     OR      PRI  224.0572  97.64068 0.0018908185
+    ## 9                Coos Bay     OR      PRI  284.0518 141.54578 0.0019941460
+    ## 10                Newport     OR      PRI  210.5362  99.79653 0.0017958974
+    ## 11           Oregon Whole     OR      PRI  294.3288 155.33293 0.0019596400
+    ## 12              Tillamook     OR      PRI  233.5345 110.03726 0.0017449388
+    ## 13 North Washington Coast     WA      PRI  164.7069  86.36141 0.0010724934
+    ## 14            Puget Sound     WA      PRI  341.0212 167.91170 0.0011626563
+    ## 15 South Washington Coast     WA      PRI  188.6170  95.31901 0.0009755918
+    ## 16       Washington Whole     WA      PRI  345.4777 164.88984 0.0012203439
+    ## 17       California Whole     CA       FH  911.9700 408.21694 0.0055984149
+    ## 18         NCC MendSonoma     CA       FH  821.4397 365.13457 0.0054516733
+    ## 19            NCC SanFran     CA       FH  852.8501 386.24346 0.0052615416
+    ## 20            North Coast     CA       FH  812.1951 356.20438 0.0054301091
+    ## 21                    SCC     CA       FH  830.9278 366.91158 0.0054754541
+    ## 22            South Coast     CA       FH  895.8375 400.29496 0.0055781658
+    ## 23                Astoria     OR       FH 1117.8724 589.10169 0.0115814517
+    ## 24              Brookings     OR       FH 1091.2710 542.10505 0.0119537133
+    ## 25               Coos Bay     OR       FH 1193.0169 611.77733 0.0121596243
+    ## 26                Newport     OR       FH 1094.6659 554.40527 0.0117735668
+    ## 27           Oregon Whole     OR       FH 1227.0460 643.78418 0.0121179941
+    ## 28              Tillamook     OR       FH 1100.7517 559.26805 0.0117268534
+    ## 29 North Washington Coast     WA       FH 1398.3154 683.42176 0.0139047432
+    ## 30            Puget Sound     WA       FH 1599.1417 837.06613 0.0138287060
+    ## 31 South Washington Coast     WA       FH 1404.4821 703.86734 0.0136355197
+    ## 32       Washington Whole     WA       FH 1605.7880 827.09760 0.0139995778
