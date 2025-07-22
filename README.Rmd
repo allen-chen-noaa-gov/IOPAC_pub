@@ -124,5 +124,13 @@ subset(multres, Region == 'WC' & Name == 'Whiting, Trawl')$Processor_income
 Recreational multipliers can now also be called within the package. Note that while the commercial multipliers are contributions per dollar of catch revenue, the recreational multipliers are dollars per trip.
 
 ```{r, eval=TRUE}
-make_rec()
+head(make_rec())
+```
+
+## At-sea multipliers
+
+At-sea multipliers can now also be called within the package. Note that the at-sea multipliers are contributions per pound of catch, different than the previous outputs.
+
+```{r, eval=TRUE}
+make_atsea()
 ```
