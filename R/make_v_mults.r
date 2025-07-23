@@ -106,12 +106,12 @@ indirinc <- inteff + empcomp + propinc + looktaxes
 # K. Calculate income impacts by adding together expenditures + employee wages +
 # prop income + taxes + direct employment
 # note ecpi gives you the region-specific multiplier for employment
-sumdirect <- inteff + empcomp + propinc + looktaxes +
-  as.numeric(impact/(as.data.frame(costf[costf$Type %in% c(
-    "Output per Employee"), !names(costf) %in% c("ID", "Type", "Cost")])))
-
 diremp <- as.numeric(impact/(as.data.frame(costf[costf$Type %in% c(
   "Output per Employee"), !names(costf) %in% c("ID", "Type", "Cost")])))
+diremp[is.infinite(diremp)] <- NaN
+
+sumdirect <- inteff + empcomp + propinc + looktaxes + diremp
+
 indiremp <- inteff + empcomp + propinc + looktaxes
 # if some vessels don't have an output per employee, how do you handle that?
 }
@@ -122,8 +122,20 @@ mults <- sumdirect/impact
 # M. Get fleet-level multipliers based on fish tickets
 ticsprop <- ticsin[-1]/replicate(nrow(ticsin[-1]), rowSums(ticsin[-1]))
 
-vesoutcoef <- rowSums(ticsprop*t(replicate(nrow(ticsprop), mults)),
-  na.rm = TRUE)
+# Replace NaN with 0 only in rows where there are non-NaN values, otherwise keep
+# all NaN if the whole row is NaN
+dfout <- ticsprop*t(replicate(nrow(ticsprop), mults))
+  for (i in seq_len(nrow(dfout))) {
+    row_vals <- dfout[i, ]
+    if (all(is.na(row_vals))) {
+      # leave as is
+      next
+    } else {
+      dfout[i, is.na(row_vals)] <- 0
+    }
+  }
+
+vesoutcoef <- rowSums(dfout)
 
 if (is.null(output)) {
   return(vesoutcoef)

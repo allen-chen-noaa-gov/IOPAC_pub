@@ -176,17 +176,19 @@ procoutcoef <- rowSums(ticsprop[1:(nrow(ticsprop) - 4), ]*procrevmult)
 
 fskey <- cbind(fskey, procoutcoef)
 
+# Calculate averages for each gear type, handling all NA cases
+calc_avg <- function(x) {
+  vals <- fskey$procoutcoef[x == 1]
+  if (all(is.na(vals))) NaN else mean(vals, na.rm = TRUE)
+}
+
+trawlavg <- calc_avg(fskey$Trawl)
+fgavg    <- calc_avg(fskey$FG)
+netavg   <- calc_avg(fskey$Net)
+othavg   <- calc_avg(fskey$Other)
+
 #calculate last four rows (Erin can ignore this step)
-procoutcoef <- c(procoutcoef,
-    sum(fskey$procoutcoef[fskey$Trawl == 1], na.rm = TRUE)/
-        length(fskey$procoutcoef[fskey$Trawl == 1]),
-    sum(fskey$procoutcoef[fskey$FG == 1], na.rm = TRUE)/
-        length(fskey$procoutcoef[fskey$FG == 1]),
-    sum(fskey$procoutcoef[fskey$Net == 1], na.rm = TRUE)/
-        length(fskey$procoutcoef[fskey$Net == 1]),
-    sum(fskey$procoutcoef[fskey$Other == 1], na.rm = TRUE)/
-        length(fskey$procoutcoef[fskey$Other == 1])
-    )
+procoutcoef <- c(procoutcoef, trawlavg, fgavg, netavg, othavg)
 
 return(procoutcoef)
 
