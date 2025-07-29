@@ -72,16 +72,16 @@ head(multres)
 ```
 
     ##    Region                    Name Sector Vessel_output Vessel_income
-    ## 1 Astoria         Whiting, At Sea    529      0.000000     0.0000000
+    ## 1 Astoria         Whiting, At Sea    529           NaN           NaN
     ## 2 Astoria          Whiting, Trawl    530      1.662108     0.8278427
-    ## 3 Astoria     Whiting, Fixed Gear    531      0.000000     0.0000000
+    ## 3 Astoria     Whiting, Fixed Gear    531           NaN           NaN
     ## 4 Astoria        Sablefish, Trawl    532      1.707345     0.8933801
     ## 5 Astoria   Sablefish, Fixed Gear    533      1.631968     0.9725567
     ## 6 Astoria Dover/Thornyhead, Trawl    534      1.708839     0.8996846
     ##   Vessel_employment Processor_output Processor_income Processor_employment
-    ## 1      0.000000e+00              NaN              NaN                  NaN
+    ## 1               NaN              NaN              NaN                  NaN
     ## 2      7.363272e-06         7.974554         2.790273         1.150247e-04
-    ## 3      0.000000e+00              NaN              NaN                  NaN
+    ## 3               NaN              NaN              NaN                  NaN
     ## 4      8.419717e-06         3.178835         1.112265         4.585141e-05
     ## 5      2.105472e-05         3.178835         1.112265         4.585141e-05
     ## 6      8.513231e-06         3.387614         1.185316         4.886284e-05
@@ -185,3 +185,18 @@ head(make_rec())
     ## 4      North Coast     CA      PRI 212.0076 102.4010 0.001302223
     ## 5              SCC     CA      PRI 254.1711 122.8785 0.001346806
     ## 6      South Coast     CA      PRI 367.6591 170.9887 0.001497081
+
+## At-sea multipliers
+
+At-sea multipliers can now also be called within the package. Note that
+the at-sea multipliers are contributions per pound of catch, different
+than the previous outputs.
+
+``` r
+make_atsea()
+```
+
+    ##   CP_pounds_income_mult CP_pounds_employ_mult MS_pounds_income_mult
+    ## 1             0.3860072          1.081268e-06             0.3915678
+    ##   MS_pounds_employ_mult
+    ## 1          1.824971e-05
