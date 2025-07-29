@@ -132,5 +132,5 @@ head(make_rec())
 At-sea multipliers can now also be called within the package. Note that the at-sea multipliers are contributions per pound of catch, different than the previous outputs.
 
 ```{r, eval=TRUE}
-make_atsea()
+make_atsea(costfin = costflist_2023)
 ```

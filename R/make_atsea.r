@@ -1,5 +1,8 @@
 make_atsea <- function(cpmscostsf = cpmscosts,
-  cpabs = impbridgelist$cpms) {
+  cpabs = impbridgelist$cpms,
+  mults = mults,
+  ecpi = ecpi,
+  costfin = NULL) {
 
 cpcosts <- cpmscostsf$CP
 
@@ -22,7 +25,7 @@ inteff <- sum(incomeeff$Abs*revencp*incomeeff$WC)
 
 empcomp <- revencp*
     sum(cpcosts$ShareC[cpcosts$Type %in% 
-        c("Non-processing crew", "Processing crew")])*
+      c("Non-processing crew", "Processing crew")])*
     ecpi[ecpi$Type == paste0("EmpComp", type), c(sector)]
 
 propinc <- revencp*
@@ -81,7 +84,10 @@ type <- "Income"
 reven <- mscosts$COST[mscosts$Type == "Revenue"]
 mscatch <- mscosts$COST[mscosts$Type == "Catch"]
 mscrewn <- mscosts$COST[mscosts$Type == "Crew"]
-costofpurchasejerryformat <- mscosts$ShareC[mscosts$Type == "Cost of purchase"]
+costofpurchasejerryformat2 <- mscosts$ShareC[mscosts$Type ==
+  "Cost of purchase 2"]
+costofpurchasejerryformat3 <- mscosts$ShareC[mscosts$Type ==
+  "Cost of purchase 3"]
 
 inteff <- sum(incomeeff$Abs*reven*incomeeff$WC)
 
@@ -94,36 +100,29 @@ propinc <- reven*
   (mscosts$ShareC[mscosts$Type %in% 
     c("Lease or charter of vessel")] + (1-sum(
       mscosts$ShareC[!mscosts$Type %in% c("Revenue", "Crew", "Catch",
-        "Cost of purchase")])))*
+        "Cost of purchase 2", "Cost of purchase 3")])))*
   ecpi[ecpi$Type == paste0("PropInc", type), c(sector)]
 
 totinc <- ((sum(mscosts$ShareC[mscosts$Type %in% 
         c("Non-processing crew", "Processing crew", 
         "Lease or charter of vessel")]) + 
         (1-sum(mscosts$ShareC[!mscosts$Type %in% c("Revenue", "Crew", "Catch",
-        "Cost of purchase")])))*reven) +
+        "Cost of purchase 2", "Cost of purchase 3")])))*reven) +
         inteff +
         empcomp +
         propinc
 
-costflist_2023 <- costflist_template
-
-costflist_2023$vessel <- clean_cost_data(functype = "vessel")
-
-costflist_2023$processor <- clean_cost_data(sums = costf_P_list[["y2023"]],
-  functype = "processor")
-
 i <- "WC"
 Vessel_income <- make_v_mults(impbridge=impbridgelist[["vessel"]], 
-    costf=costflist_2023$vessel, mults=mults[["Income"]], type = "Income", 
+    costf=costfin$vessel, mults=mults[["Income"]], type = "Income", 
     sector = i, ticsin = tics_list$y2023[[i]], ecpi=ecpi, taxes=taxes,
     output = "mults")
     
 #cv purchases in revlbsdas not updated yet? only to 2018, do it by hand
 MS_pounds_income_mult <- as.numeric((((
-    costofpurchasejerryformat*reven*
+    max(costofpurchasejerryformat2, 0)*reven*
         Vessel_income["Pacific.Whiting.Trawler"] + 
-    costofpurchasejerryformat*reven*
+    max(costofpurchasejerryformat3, 0)*reven*
         Vessel_income["Large.Groundfish.Trawler"] + 
     totinc)/
     reven)*reven)/
@@ -146,7 +145,7 @@ propemp <- reven*
     (mscosts$ShareC[mscosts$Type %in% 
         c("Lease or charter of vessel")] + (1-sum(
       mscosts$ShareC[!mscosts$Type %in% c("Revenue", "Crew", "Catch",
-        "Cost of purchase")])))*
+        "Cost of purchase 2", "Cost of purchase 3")])))*
     ecpi[ecpi$Type == paste0("PropInc", type), c(sector)]
 
 totemp <- (reven/(reven/crewn)) +
@@ -155,15 +154,15 @@ totemp <- (reven/(reven/crewn)) +
         propemp
 
 Vessel_emp <- make_v_mults(impbridge=impbridgelist[["vessel"]], 
-    costf=costflist_2023$vessel, mults=mults[["Employment"]],
+    costf=costfin$vessel, mults=mults[["Employment"]],
     type = "Employment", 
     sector = i, ticsin = tics_list$y2023[[i]], ecpi=ecpi, taxes=taxes,
     output = "mults")
     
 MS_pounds_employ_mult <- as.numeric((((
-    costofpurchasejerryformat*reven*
+    max(costofpurchasejerryformat2, 0)*reven*
         Vessel_emp["Pacific.Whiting.Trawler"] + 
-    costofpurchasejerryformat*reven*
+    max(costofpurchasejerryformat3, 0)*reven*
         Vessel_emp["Large.Groundfish.Trawler"] + 
     totemp)/
     reven)*reven)/
