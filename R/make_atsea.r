@@ -1,40 +1,22 @@
-make_atsea <- function(recdata = rec_survey_data,
-  recmult = rec_multipliers) {
+make_atsea <- function(cpmscostsf = cpmscosts,
+  cpabs = impbridgelist$cpms) {
 
+cpcosts <- cpmscostsf$CP
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-cpabs <- read.csv(paste0("U:\\NWFSC_data_code\\IOPAC\\implan_params\\", 
-    "CPabs.csv"), header=FALSE)
-cpabs$Type <- cpabs$V1
-
-newabs <- merge(cpabs, cpcosts[c("Type", "ShareC")], 
+newabs <- merge(cpabs, cpcosts[c("Type", "ShareC")],
     by=c("Type"), all.x=TRUE)
-    
-newabs$Abs <- newabs$ShareC*newabs$V4
-newabs$CommodityCode <- newabs$V2
+
+newabs$Abs <- newabs$ShareC*newabs$Share
 
 incomeeff <- merge(newabs, mults$Income[c("CommodityCode","WC")],
     by = c("CommodityCode"))
 
-sector <- "WC" 
+sector <- "WC"
 type <- "Income"
+
+revencp <- cpcosts$COST[cpcosts$Type == "Revenue"]
+cpcatch <- cpcosts$COST[cpcosts$Type == "Catch"]
+crewn <- cpcosts$COST[cpcosts$Type == "Crew"]
 
 inteff <- sum(incomeeff$Abs*revencp*incomeeff$WC)
 
@@ -44,12 +26,13 @@ empcomp <- revencp*
     ecpi[ecpi$Type == paste0("EmpComp", type), c(sector)]
 
 propinc <- revencp*
-    (1-sum(cpcosts$ShareC))*
+    (1-sum(cpcosts$ShareC[!cpcosts$Type %in% c("Revenue", "Crew", "Catch")]))*
     ecpi[ecpi$Type == paste0("PropInc", type), c(sector)]
 
 totinc <- ((sum(cpcosts$ShareC[cpcosts$Type %in% 
         c("Non-processing crew", "Processing crew")]) + 
-        (1-sum(cpcosts$ShareC)))*revencp) +
+        (1-sum(cpcosts$ShareC[!cpcosts$Type %in%
+          c("Revenue", "Crew", "Catch")])))*revencp) +
         inteff +
         empcomp +
         propinc
@@ -80,25 +63,25 @@ totemp <- (revencp/(revencp/crewn)) +
   
 CP_pounds_employ_mult <- totemp/sum(cpcatch)
 
+msabs <- cpabs[!cpabs$Type %in% c("Marine Council Fees", "Sea state"), ]
 
-
-
-
-msabs <- read.csv(paste0("U:\\NWFSC_data_code\\IOPAC\\implan_params\\", 
-    "MSabs.csv"), header=FALSE)
-msabs$Type <- msabs$V1    
+mscosts <- cpmscostsf$MS
 
 newabs <- merge(msabs, mscosts[c("Type", "ShareC")], 
     by=c("Type"), all.x=TRUE)      
     
-newabs$Abs <- newabs$ShareC*newabs$V5
-newabs$CommodityCode <- newabs$V2
+newabs$Abs <- newabs$ShareC*newabs$Share
 
 incomeeff <- merge(newabs, mults$Income[c("CommodityCode","WC")], 
     by = c("CommodityCode"))
 
 sector <- "WC" 
 type <- "Income"
+
+reven <- mscosts$COST[mscosts$Type == "Revenue"]
+mscatch <- mscosts$COST[mscosts$Type == "Catch"]
+mscrewn <- mscosts$COST[mscosts$Type == "Crew"]
+costofpurchasejerryformat <- mscosts$ShareC[mscosts$Type == "Cost of purchase"]
 
 inteff <- sum(incomeeff$Abs*reven*incomeeff$WC)
 
@@ -108,28 +91,39 @@ empcomp <- reven*
     ecpi[ecpi$Type == paste0("EmpComp", type), c(sector)]
 
 propinc <- reven*
-    (mscosts$ShareC[mscosts$Type %in% 
-        c("Lease or charter of vessel")] + (1-sum(mscosts$ShareC)))*
-    ecpi[ecpi$Type == paste0("PropInc", type), c(sector)]
+  (mscosts$ShareC[mscosts$Type %in% 
+    c("Lease or charter of vessel")] + (1-sum(
+      mscosts$ShareC[!mscosts$Type %in% c("Revenue", "Crew", "Catch",
+        "Cost of purchase")])))*
+  ecpi[ecpi$Type == paste0("PropInc", type), c(sector)]
 
 totinc <- ((sum(mscosts$ShareC[mscosts$Type %in% 
         c("Non-processing crew", "Processing crew", 
         "Lease or charter of vessel")]) + 
-        (1-sum(mscosts$ShareC)))*reven) +
+        (1-sum(mscosts$ShareC[!mscosts$Type %in% c("Revenue", "Crew", "Catch",
+        "Cost of purchase")])))*reven) +
         inteff +
         empcomp +
         propinc
 
+costflist_2023 <- costflist_template
+
+costflist_2023$vessel <- clean_cost_data(functype = "vessel")
+
+costflist_2023$processor <- clean_cost_data(sums = costf_P_list[["y2023"]],
+  functype = "processor")
+
 i <- "WC"
-Vessel_income <- make_v_mults_outm(impbridge=impbridgelist[["vessel"]], 
-    costf=costflist_2022[["vessel"]], mults=mults[["Income"]], type = "Income", 
-    sector = i, ticsin = ticslist_2022[[i]], ecpi=ecpi, taxes=taxes)
+Vessel_income <- make_v_mults(impbridge=impbridgelist[["vessel"]], 
+    costf=costflist_2023$vessel, mults=mults[["Income"]], type = "Income", 
+    sector = i, ticsin = tics_list$y2023[[i]], ecpi=ecpi, taxes=taxes,
+    output = "mults")
     
 #cv purchases in revlbsdas not updated yet? only to 2018, do it by hand
 MS_pounds_income_mult <- as.numeric((((
-    costofpurchasejerryformat$Perc[1]*reven*
+    costofpurchasejerryformat*reven*
         Vessel_income["Pacific.Whiting.Trawler"] + 
-    costofpurchasejerryformat$Perc[2]*reven*
+    costofpurchasejerryformat*reven*
         Vessel_income["Large.Groundfish.Trawler"] + 
     totinc)/
     reven)*reven)/
@@ -150,7 +144,9 @@ empcompemp <- reven*
 
 propemp <- reven*
     (mscosts$ShareC[mscosts$Type %in% 
-        c("Lease or charter of vessel")] + (1-sum(mscosts$ShareC)))*
+        c("Lease or charter of vessel")] + (1-sum(
+      mscosts$ShareC[!mscosts$Type %in% c("Revenue", "Crew", "Catch",
+        "Cost of purchase")])))*
     ecpi[ecpi$Type == paste0("PropInc", type), c(sector)]
 
 totemp <- (reven/(reven/crewn)) +
@@ -158,23 +154,22 @@ totemp <- (reven/(reven/crewn)) +
         empcompemp +
         propemp
 
-Vessel_emp <- make_v_mults_outm(impbridge=impbridgelist[["vessel"]], 
-    costf=costflist_2022[["vessel"]], mults=mults[["Employment"]], 
+Vessel_emp <- make_v_mults(impbridge=impbridgelist[["vessel"]], 
+    costf=costflist_2023$vessel, mults=mults[["Employment"]],
     type = "Employment", 
-    sector = i, ticsin = ticslist_2022[[i]], ecpi=ecpi, taxes=taxes)
+    sector = i, ticsin = tics_list$y2023[[i]], ecpi=ecpi, taxes=taxes,
+    output = "mults")
     
 MS_pounds_employ_mult <- as.numeric((((
-    costofpurchasejerryformat$Perc[1]*reven*
+    costofpurchasejerryformat*reven*
         Vessel_emp["Pacific.Whiting.Trawler"] + 
-    costofpurchasejerryformat$Perc[2]*reven*
+    costofpurchasejerryformat*reven*
         Vessel_emp["Large.Groundfish.Trawler"] + 
     totemp)/
     reven)*reven)/
     sum(mscatch))
 
-data.frame(CP_pounds_income_mult, CP_pounds_employ_mult, MS_pounds_income_mult, 
-    MS_pounds_employ_mult)
-
-  return()
+  return(data.frame(CP_pounds_income_mult, CP_pounds_employ_mult,
+    MS_pounds_income_mult, MS_pounds_employ_mult))
 
   }
