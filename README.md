@@ -73,25 +73,25 @@ head(multres)
 
     ##    Region                    Name Sector Vessel_output Vessel_income
     ## 1 Astoria         Whiting, At Sea    529           NaN           NaN
-    ## 2 Astoria          Whiting, Trawl    530      1.662108     0.8278427
+    ## 2 Astoria          Whiting, Trawl    530      1.655076     0.8249935
     ## 3 Astoria     Whiting, Fixed Gear    531           NaN           NaN
-    ## 4 Astoria        Sablefish, Trawl    532      1.707345     0.8933801
-    ## 5 Astoria   Sablefish, Fixed Gear    533      1.631968     0.9725567
-    ## 6 Astoria Dover/Thornyhead, Trawl    534      1.708839     0.8996846
+    ## 4 Astoria        Sablefish, Trawl    532      1.703540     0.8918385
+    ## 5 Astoria   Sablefish, Fixed Gear    533      1.630345     0.9718993
+    ## 6 Astoria Dover/Thornyhead, Trawl    534      1.705272     0.8982394
     ##   Vessel_employment Processor_output Processor_income Processor_employment
     ## 1               NaN              NaN              NaN                  NaN
-    ## 2      7.363272e-06         7.974554         2.790273         1.150247e-04
+    ## 2      7.321257e-06         7.974554         2.790273         1.150247e-04
     ## 3               NaN              NaN              NaN                  NaN
-    ## 4      8.419717e-06         3.178835         1.112265         4.585141e-05
-    ## 5      2.105472e-05         3.178835         1.112265         4.585141e-05
-    ## 6      8.513231e-06         3.387614         1.185316         4.886284e-05
+    ## 4      8.396983e-06         3.178835         1.112265         4.585141e-05
+    ## 5      2.104503e-05         3.178835         1.112265         4.585141e-05
+    ## 6      8.491918e-06         3.387614         1.185316         4.886284e-05
     ##     TotOut   TotInc       TotEmp
     ## 1      NaN      NaN          NaN
-    ## 2 9.636662 3.618116 1.223880e-04
+    ## 2 9.629630 3.615267 1.223460e-04
     ## 3      NaN      NaN          NaN
-    ## 4 4.886179 2.005645 5.427112e-05
-    ## 5 4.810802 2.084822 6.690613e-05
-    ## 6 5.096454 2.085001 5.737607e-05
+    ## 4 4.882375 2.004103 5.424839e-05
+    ## 5 4.809180 2.084164 6.689643e-05
+    ## 6 5.092887 2.083556 5.735476e-05
 
 There is also a bounds function, depicting the central tendency and
 uncertainty of the multipliers. The bounds are calculated using the
@@ -179,12 +179,12 @@ head(make_rec())
 ```
 
     ##              Region State TripType   Output   Income  Employment
-    ## 1 California Whole     CA      PRI 391.8962 183.3690 0.001532410
-    ## 2   NCC MendSonoma     CA      PRI 225.9484 111.1779 0.001314814
-    ## 3      NCC SanFran     CA      PRI 296.4262 146.8263 0.001048534
-    ## 4      North Coast     CA      PRI 212.0076 102.4010 0.001302223
-    ## 5              SCC     CA      PRI 254.1711 122.8785 0.001346806
-    ## 6      South Coast     CA      PRI 367.6591 170.9887 0.001497081
+    ## 1 California Whole     CA      PRI 387.9740 181.3116 0.001501865
+    ## 2   NCC MendSonoma     CA      PRI 226.4653 111.4851 0.001297157
+    ## 3      NCC SanFran     CA      PRI 294.6259 145.8750 0.001030079
+    ## 4      North Coast     CA      PRI 212.9839 102.8976 0.001287104
+    ## 5              SCC     CA      PRI 253.7623 122.7201 0.001327235
+    ## 6      South Coast     CA      PRI 366.2508 170.3181 0.001474214
 
 ## At-sea multipliers
 
@@ -197,6 +197,6 @@ make_atsea(costfin = costflist_2023)
 ```
 
     ##   CP_pounds_income_mult CP_pounds_employ_mult MS_pounds_income_mult
-    ## 1             0.3860072          1.081268e-06             0.2959465
+    ## 1             0.3860072          1.081268e-06             0.2955617
     ##   MS_pounds_employ_mult
-    ## 1          1.751576e-05
+    ## 1          1.751114e-05
