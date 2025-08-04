@@ -92,6 +92,24 @@ clean_cost_data <- function(sums = costf_V_list[["y2023"]],
     # Set column names from costflist_template$vessel
     colnames(percs) <- colnames(costflist_template$vessel)
 
+    # Replace columns that are all zeroes with the average of the other numeric columns that are not all zeroes
+
+    for (col in names(percs)) {
+      # Only consider numeric columns
+      if (is.numeric(percs[[col]])) {
+        if (all(percs[[col]] == 0, na.rm = TRUE)) {
+          # Find other numeric columns that are not all zeroes
+          other_cols <- setdiff(names(percs), col)
+          valid_cols <- other_cols[
+            sapply(percs[other_cols], function(x) is.numeric(x) &&
+              !all(x == 0, na.rm = TRUE))
+          ]
+          # Replace with row-wise mean of valid columns
+          percs[[col]] <- rowMeans(percs[valid_cols], na.rm = TRUE)
+        }
+      }
+    }
+
     return(percs)
 
   } else if (costtype == "means") {

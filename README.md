@@ -193,10 +193,10 @@ the at-sea multipliers are contributions per pound of catch, different
 than the previous outputs.
 
 ``` r
-make_atsea()
+make_atsea(costfin = costflist_2023)
 ```
 
     ##   CP_pounds_income_mult CP_pounds_employ_mult MS_pounds_income_mult
-    ## 1             0.3860072          1.081268e-06             0.3915678
+    ## 1             0.3860072          1.081268e-06             0.2959465
     ##   MS_pounds_employ_mult
-    ## 1          1.824971e-05
+    ## 1          1.751576e-05

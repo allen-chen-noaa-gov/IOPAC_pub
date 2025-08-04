@@ -56,26 +56,6 @@ costflist_2023 <- costflist_template
 
 costflist_2023$vessel <- clean_cost_data(functype = "vessel")
 
-# Replace columns in costflist_2023$vessel that are all zeroes with the average of the other numeric columns that are not all zeroes
-vessel_df <- costflist_2023$vessel
-
-for (col in names(vessel_df)) {
-  # Only consider numeric columns
-  if (is.numeric(vessel_df[[col]])) {
-    if (all(vessel_df[[col]] == 0, na.rm = TRUE)) {
-      # Find other numeric columns that are not all zeroes
-      other_cols <- setdiff(names(vessel_df), col)
-      valid_cols <- other_cols[
-        sapply(vessel_df[other_cols], function(x) is.numeric(x) && !all(x == 0, na.rm = TRUE))
-      ]
-      # Replace with row-wise mean of valid columns
-      vessel_df[[col]] <- rowMeans(vessel_df[valid_cols], na.rm = TRUE)
-    }
-  }
-}
-
-costflist_2023$vessel <- vessel_df
-
 costflist_2023$processor <- clean_cost_data(sums = costf_P_list[["y2023"]],
   functype = "processor")
 
