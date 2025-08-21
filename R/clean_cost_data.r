@@ -47,7 +47,7 @@ clean_cost_data <- function(sums = costf_V_list[["y2023"]],
 
   means <- sumsconf / countsconf
   means[is.na(means)] <- 0
-  # probably should call this
+  # probably should call costflist_template in function
   means$Cost <- costflist_template$vessel$Cost
   means$Cost[means$Cost %in% c("Proprietary income",
     "Output per Employee")] <- c("REV", "CREW")

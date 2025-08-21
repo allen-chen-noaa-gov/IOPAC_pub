@@ -73,24 +73,24 @@ head(multres)
 
     ##    Region                    Name Sector Vessel_output Vessel_income
     ## 1 Astoria         Whiting, At Sea    529           NaN           NaN
-    ## 2 Astoria          Whiting, Trawl    530      1.655076     0.8249935
+    ## 2 Astoria          Whiting, Trawl    530      1.669010     0.8102007
     ## 3 Astoria     Whiting, Fixed Gear    531           NaN           NaN
     ## 4 Astoria        Sablefish, Trawl    532      1.703540     0.8918385
-    ## 5 Astoria   Sablefish, Fixed Gear    533      1.630345     0.9718993
+    ## 5 Astoria   Sablefish, Fixed Gear    533      1.735935     0.8651723
     ## 6 Astoria Dover/Thornyhead, Trawl    534      1.705272     0.8982394
     ##   Vessel_employment Processor_output Processor_income Processor_employment
     ## 1               NaN              NaN              NaN                  NaN
-    ## 2      7.321257e-06         7.974554         2.790273         1.150247e-04
+    ## 2      7.367384e-06         7.974554         2.790273         1.150247e-04
     ## 3               NaN              NaN              NaN                  NaN
     ## 4      8.396983e-06         3.178835         1.112265         4.585141e-05
-    ## 5      2.104503e-05         3.178835         1.112265         4.585141e-05
+    ## 5      2.140190e-05         3.178835         1.112265         4.585141e-05
     ## 6      8.491918e-06         3.387614         1.185316         4.886284e-05
     ##     TotOut   TotInc       TotEmp
     ## 1      NaN      NaN          NaN
-    ## 2 9.629630 3.615267 1.223460e-04
+    ## 2 9.643564 3.600474 1.223921e-04
     ## 3      NaN      NaN          NaN
     ## 4 4.882375 2.004103 5.424839e-05
-    ## 5 4.809180 2.084164 6.689643e-05
+    ## 5 4.914770 1.977437 6.725331e-05
     ## 6 5.092887 2.083556 5.735476e-05
 
 There is also a bounds function, depicting the central tendency and
@@ -200,3 +200,19 @@ make_atsea(costfin = costflist_2023)
     ## 1             0.3860072          1.081268e-06             0.2955617
     ##   MS_pounds_employ_mult
     ## 1          1.751114e-05
+
+## DISCLAIMER
+
+“This repository is a scientific product and is not official
+communication of the National Oceanic and Atmospheric Administration, or
+the United States Department of Commerce. All NOAA GitHub project code
+is provided on an ‘as is’ basis and the user assumes responsibility for
+its use. Any claims against the Department of Commerce or Department of
+Commerce bureaus stemming from the use of this GitHub project will be
+governed by all applicable Federal law. Any reference to specific
+commercial products, processes, or services by service mark, trademark,
+manufacturer, or otherwise, does not constitute or imply their
+endorsement, recommendation or favoring by the Department of Commerce.
+The Department of Commerce seal and logo, or the seal and logo of a DOC
+bureau, shall not be used in any manner to imply endorsement of any
+commercial product or activity by DOC or the United States Government.”
