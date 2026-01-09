@@ -1,5 +1,6 @@
 make_rec <- function(recdata = rec_survey_data,
-  recmult = rec_multipliers) {
+  recmult = rec_multipliers,
+  ticsdatin = tics_list$y2023) {
 
   recdata <- do.call(rbind, 
     lapply(names(rec_survey_data), function(name) {
@@ -63,14 +64,19 @@ make_rec <- function(recdata = rec_survey_data,
     }
 
     Vessel <- lapply(c("Output", "Income", "Employment"), function(type) {
-      max(make_v_mults(impbridge = impbridgelist[["charter"]],
+      vals <- make_v_mults(impbridge = impbridgelist[["charter"]],
         costf = costf_charter[(colnames(costf_charter) %in% c("Type", j))],
         mults = mults[[type]],
         type = type,
         sector = i,
-        ticsin = tics_list$y2023[[i]],
+        ticsin = ticsdatin[[i]],
         ecpi = ecpi,
-        taxes = taxes))
+        taxes = taxes)
+      # If all values are NA/NaN, return NaN rather than -Inf; otherwise take max ignoring NAs
+      if (all(is.na(vals))) {
+        return(NaN)
+      }
+      max(vals, na.rm = TRUE)
     })
   
   names(Vessel) <- paste0("Charter_", c("output", "income", "employment"))

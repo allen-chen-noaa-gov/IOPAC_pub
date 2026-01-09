@@ -54,7 +54,7 @@ iopac_wrap <- function(impbridgein = impbridgelist,
   #' @export
 
 results <- lapply(names(ticsin), function(i) {
-  
+
   Vessel <- lapply(c("Output", "Income", "Employment"), function(type) {
     make_v_mults(impbridge = impbridgein[["vessel"]],
       costf = costfin[["vessel"]],
