@@ -16,6 +16,7 @@ knitr::opts_chunk$set(fig.path = "man/figures/README-", echo = TRUE,
 This is a repository containing the Input-Output model for Pacific Coast Fisheries (IOPAC), created by [Jerry Leonard](https://github.com/allen-chen-noaa-gov/IOPAC_pub/blob/main/inst/leonard_TM.pdf). This model estimates gross changes in economic contributions due to changes in fishery harvests, for example from environmental or policy changes. This readme documents the repository and provides a minimal reproducible example.
 
 ## Data submodule
+
 Note that the data folder is in a private repository. Please contact allen.chen@noaa.gov for permissions. To push and pull from the data submodule, you can first work inside data submodule:
 ```{git, eval=FALSE}
 cd data

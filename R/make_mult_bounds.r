@@ -72,17 +72,32 @@ make_mult_bounds <- function(
 
     # Calculate the 25th, 50th (median), and 75th percentiles for each row
     probs <- c(0.025, 0.5, 0.975)
-    row_percentiles_output <- t(apply(vessel_output, MARGIN = 1, FUN = quantile,
-      probs = probs))
+    # If all values in a row are NaN, return NaN for those percentiles; otherwise
+    # compute quantiles ignoring NaNs
+    row_percentiles_output <- t(apply(vessel_output, MARGIN = 1, FUN = function(x) {
+      if (all(is.nan(x))) {
+        return(rep(NaN, length(probs)))
+      }
+      quantile(x, probs = probs, na.rm = TRUE)
+    }))
     colnames(row_percentiles_output) <- c("Perc_025", "Perc_500",
       "Perc_975")
 
-    row_percentiles_income <- t(apply(vessel_income, MARGIN = 1, FUN = quantile,
-      probs = probs))
+    row_percentiles_income <- t(apply(vessel_income, MARGIN = 1, FUN = function(x) {
+      if (all(is.nan(x))) {
+        return(rep(NaN, length(probs)))
+      }
+      quantile(x, probs = probs, na.rm = TRUE)
+    }))
     colnames(row_percentiles_income) <- c("Perc_025", "Perc_500",
       "Perc_975")
 
-    row_percentiles_employment <- t(apply(vessel_employment, MARGIN = 1, FUN = quantile, probs = probs))
+    row_percentiles_employment <- t(apply(vessel_employment, MARGIN = 1, FUN = function(x) {
+      if (all(is.nan(x))) {
+        return(rep(NaN, length(probs)))
+      }
+      quantile(x, probs = probs, na.rm = TRUE)
+    }))
     colnames(row_percentiles_employment) <- c("Perc_025", "Perc_500",
       "Perc_975")
 

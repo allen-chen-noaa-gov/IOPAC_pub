@@ -1,4 +1,5 @@
-make_atsea <- function(cpmscostsf = cpmscosts,
+make_atsea <- function(cpmscostsf = cpmscosts$y2023,
+  ticsindat = tics_list$y2023,
   cpabs = impbridgelist$cpms,
   multsin = mults,
   ecpiin = ecpi,
@@ -115,7 +116,7 @@ totinc <- ((sum(mscosts$ShareC[mscosts$Type %in%
 i <- "WC"
 Vessel_income <- make_v_mults(impbridge=impbridgelist[["vessel"]], 
     costf=costfin$vessel, mults=multsin[["Income"]], type = "Income", 
-    sector = i, ticsin = tics_list$y2023[[i]], ecpi=ecpiin, taxes=taxes,
+    sector = i, ticsin = ticsindat[[i]], ecpi=ecpiin, taxes=taxes,
     output = "mults")
     
 #cv purchases in revlbsdas not updated yet? only to 2018, do it by hand
@@ -156,7 +157,7 @@ totemp <- (reven/(reven/crewn)) +
 Vessel_emp <- make_v_mults(impbridge=impbridgelist[["vessel"]], 
     costf=costfin$vessel, mults=multsin[["Employment"]],
     type = "Employment", 
-    sector = i, ticsin = tics_list$y2023[[i]], ecpi=ecpiin, taxes=taxes,
+    sector = i, ticsin = ticsindat[[i]], ecpi=ecpiin, taxes=taxes,
     output = "mults")
     
 MS_pounds_employ_mult <- as.numeric((((
