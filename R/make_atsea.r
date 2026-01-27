@@ -66,7 +66,7 @@ totemp <- (revencp/(revencp/crewn)) +
         propemp
   
 CP_pounds_employ_mult <- totemp/sum(cpcatch)
-
+browser()
 msabs <- cpabs[!cpabs$Type %in% c("Marine Council Fees", "Sea state"), ]
 
 mscosts <- cpmscostsf$MS

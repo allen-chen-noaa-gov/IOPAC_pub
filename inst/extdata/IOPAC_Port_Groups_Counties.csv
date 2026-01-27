@@ -1,0 +1,85 @@
+﻿State,IO-PAC port group,PCID,Port name (PNAME),AGID,County
+WA,Puget Sound,EVR,Everett,W,Snohomish
+WA,Puget Sound,SEA,Seattle,W,King
+WA,Puget Sound,BLN,Blaine,W,Whatcom
+WA,Puget Sound,TAC,Tacoma,W,Pierce
+WA,Puget Sound,OLY,Olympia,W,Thurston
+WA,Puget Sound,BLL,Bellingham Bay,W,Whatcom
+WA,Puget Sound,SHL,Shelton,W,Mason
+WA,Puget Sound,ANA,Anacortes,W,Skagit
+WA,Puget Sound,LAC,La Conner,W,Skagit
+WA,Puget Sound,FRI,Friday Harbor,W,San Juan
+WA,Puget Sound,ONP,Other north Puget Sound ports,W,Island
+WA,North WA coast,NEA,Neah Bay,W,Clallam
+WA,North WA coast,PAG,Port Angeles,W,Clallam
+WA,North WA coast,SEQ,Sequim,W,Clallam
+WA,North WA coast,TNS,Port Townsend,W,Jefferson
+WA,North WA coast,LAP,La Push,W,Clallam
+WA,South and central WA coast,CPL,Copalis Beach,W,Grays Harbor
+WA,South and central WA coast,GRH,Grays Harbor,W,Grays Harbor
+WA,South and central WA coast,WPT,Westport,W,Grays Harbor
+WA,South and central WA coast,WLB,Willapa Bay,W,Pacific
+WA,South and central WA coast,LWC,Ilwaco/Chinook,W,Pacific
+WA,South and central WA coast,OCR,Other Columbia River ports,W,Clark
+OR,Columbia River,CRV,Columbia River pseudo port code,O,None
+OR,Astoria,AST,Astoria,O,Clatsop
+OR,Astoria,GSS,Gearhart/Seaside,O,Clatsop
+OR,Astoria,CNB,Cannon Beach,O,Clatsop
+OR,Astoria,CRV,Pseudo port code for Columbia Ri,O,None
+OR,Tillamook,TLL,Tillamook/Garibaldi,O,Tillamook
+OR,Tillamook,NHL,Nehalem Bay,O,Tillamook
+OR,Tillamook,NTR,Netarts Bay,O,Tillamook
+OR,Tillamook,PCC,Pacific City,O,Tillamook
+OR,Newport,DPO,Depoe Bay,O,Lincoln
+OR,Newport,NEW,Newport,O,Lincoln
+OR,Newport,WLD,Waldport,O,Lincoln
+OR,Coos Bay,FLR,Florence,O,Lane
+OR,Coos Bay,WIN,Winchester Bay,O,Douglas
+OR,Coos Bay,COS,Charleston (Coos Bay),O,Coos
+OR,Coos Bay,BDN,Bandon,O,Coos
+OR,Brookings,ORF,Port Orford,O,Curry
+OR,Brookings,GLD,Gold Beach,O,Curry
+OR,Brookings,BRK,Brookings,O,Curry
+CA,Crescent City,CRS,Crescent City,C,Del Norte
+CA,Eureka,ERK,Eureka,C,Humboldt
+CA,Eureka,FLN,Fields Landing,C,Humboldt
+CA,Eureka,TRN,Trinidad,C,Humboldt
+CA,Eureka,OHB,Other Humboldt County ports,C,Humboldt
+CA,Fort Bragg,BRG,Fort Bragg,C,Mendocino
+CA,Fort Bragg,ALB,Albion,C,Mendocino
+CA,Fort Bragg,ARE,Point Arena,C,Mendocino
+CA,Fort Bragg,OMD,Other Mendocino County ports,C,Mendocino
+CA,Bodega Bay,BDG,Bodega Bay,C,Sonoma
+CA,Bodega Bay,RYS,Point Reyes,C,Marin
+CA,Bodega Bay,TML,Tomales Bay,C,Marin
+CA,Bodega Bay,OSM,"Other Sonoma, Marin County outer coast",C,Marin
+CA,Bodega Bay,SLT,Sausalito,C,Marin
+CA,San Francisco,SF,San Francisco,C,San Francisco
+CA,San Francisco,RCH,Richmond,C,Contra Costa
+CA,San Francisco,BKL,Berkeley,C,Alameda
+CA,San Francisco,OAK,Oakland,C,Alameda
+CA,San Francisco,ALM,Alameda,C,Alameda
+CA,San Francisco,OSF,"Other San Francisco Bay, San Mateo",C,Alameda
+CA,San Francisco,PRN,Princeton/Half Moon Bay,C,San Mateo
+CA,Monterey,CRZ,Santa Cruz,C,Santa Cruz
+CA,Monterey,MNT,Monterey,C,Monterey
+CA,Monterey,MOS,Moss Landing,C,Monterey
+CA,Monterey,OCM,"Other Santa Cruz, Monterey County ports",C,Monterey
+CA,Morro Bay,MRO,Morro Bay,C,San Luis Obispo
+CA,Morro Bay,AVL,Avila,C,San Luis Obispo
+CA,Morro Bay,OSL,Other San Luis Obispo County ports,C,San Luis Obispo
+CA,Santa Barbara,SB,Santa Barbara,C,Santa Barbara
+CA,Santa Barbara,VEN,Ventura,C,Ventura
+CA,Santa Barbara,HNM,Port Hueneme,C,Ventura
+CA,Santa Barbara,OXN,Oxnard,C,Ventura
+CA,Santa Barbara,OBV,"Other Santa Barbara, Ventura County",C,Santa Barbara
+CA,Los Angeles,SP,San Pedro,C,Los Angeles
+CA,Los Angeles,TRM,Terminal Island,C,Los Angeles
+CA,Los Angeles,LGB,Long Beach,C,Los Angeles
+CA,Los Angeles,WLM,Wilmington,C,Los Angeles
+CA,Los Angeles,NWB,Newport Beach,C,Orange
+CA,Los Angeles,DNA,Dana Point,C,Orange
+CA,Los Angeles,OLA,"Other Los Angeles, Orange County ports",C,Los Angeles
+CA,San Diego,SD,San Diego,C,San Diego
+CA,San Diego,OCN,Oceanside,C,San Diego
+CA,San Diego,OSD,Other San Diego County ports,C,Riverside

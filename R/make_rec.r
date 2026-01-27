@@ -1,6 +1,7 @@
 make_rec <- function(recdata = rec_survey_data,
   recmult = rec_multipliers,
-  ticsdatin = tics_list$y2023) {
+  ticsdatin = tics_list$y2023,
+  inflationin = 1) {
 
   recdata <- do.call(rbind, 
     lapply(names(rec_survey_data), function(name) {
@@ -29,7 +30,7 @@ make_rec <- function(recdata = rec_survey_data,
   dataout$IncomePerExpense <- dataout$Income / dataout$TotExpenses
   dataout$EmploymentPerExpense <- dataout$Employment / dataout$TotExpenses
 
-  inflation <- 1
+  inflation <- inflationin
 
   pridataout <- merge(dataout, recdata[recdata$Cat == "Trips",
     c("State", "TripType", "Total")], by = c("State", "TripType"))
@@ -44,7 +45,7 @@ make_rec <- function(recdata = rec_survey_data,
   dataout <- merge(recmult[recmult$TripType == "FH", ], recdataexp,
     by = c("State", "TripType"))
 
-  inflation <- 1
+  inflation <- inflationin
 
   fhdataout <- merge(dataout, recdata[recdata$Cat == "Trips",
     c("State", "TripType", "Total")], by = c("State", "TripType"))
