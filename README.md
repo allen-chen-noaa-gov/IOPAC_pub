@@ -17,7 +17,7 @@ Note that the data folder is in a private repository. Please contact
 submodule, you can first work inside data submodule:
 
 ``` git
-cd data
+cd data # nolint: error.
 # make changes, add, commit, push
 git add .
 git commit -m "Your message for data submodule"

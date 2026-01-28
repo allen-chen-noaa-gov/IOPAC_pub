@@ -89,23 +89,23 @@ stopifnot("IO.PAC.port.group" %in% names(merged))
 # ensure group column
 merged <- merged %>% mutate(io_group = as.character(`IO.PAC.port.group`))
 
-# create recycled 4-color mapping
-cols <- c("#1b9e77", "#d95f02", "#7570b3", "#999999")
+# create recycled 4-shade grayscale mapping
+cols <- c("#1a1a1a", "#4d4d4d", "#808080", "#b3b3b3")
 groups <- merged %>% distinct(io_group) %>% pull(io_group)
 vals <- setNames(rep(cols, length.out = length(groups)), groups)
 
 # force Puget Sound to use the specific purple color
 if ("Puget Sound" %in% names(vals)) {
-  vals["Puget Sound"] <- "#d95f02"
+  vals["Puget Sound"] <- "#4d4d4d"
 }
 if ("San Diego" %in% names(vals)) {
-  vals["San Diego"] <- "#7570b3"
+  vals["San Diego"] <- "#808080"
 }
 if ("Bodega Bay" %in% names(vals)) {
-  vals["Bodega Bay"] <- "#999999"
+  vals["Bodega Bay"] <- "#b3b3b3"
 }
 if ("Tillamook" %in% names(vals)) {
-  vals["Tillamook"] <- "#999999"
+  vals["Tillamook"] <- "#b3b3b3"
 }
 
 # centroids for labels
@@ -197,7 +197,7 @@ p <- ggplot() +
   geom_polygon(data = merged,
                aes(x = lon, y = lat, group = group, fill = io_group),
                color = "black", size = 0.2) +
-  scale_fill_manual(values = vals, name = "IOPAC port group") +
+  scale_fill_manual(values = vals, name = "IOPAC port group", guide = "none") +
   coord_map(xlim = map_xlim) +
   theme_void()
 
@@ -209,7 +209,7 @@ p <- p + geom_text(
   inherit.aes = FALSE
 )
 
-out_file <- here::here("inst", "IOPAC_map.png")
+out_file <- here::here("inst", "figure_1_IOPAC_map.png")
 
 ggplot2::ggsave(filename = out_file, plot = p, width = 8, height = 6, dpi = 300, bg = "white")
 message("Saved map: ", out_file)
