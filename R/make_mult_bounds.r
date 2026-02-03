@@ -3,9 +3,21 @@ make_mult_bounds <- function(
   ticsin = tics_list$y2023,
   markupsin = markups_list$y2023,
   draws = 300,
-  seed = 42) {
+  seed = 42,
+  drawtype = "normal",
+  rawiters = FALSE,
+  covarsin = NULL,
+  countsin = costf_V_count_list$y2023) {
 
     set.seed(seed)
+
+    if (is.null(covarsin) == TRUE && (drawtype == "multivariate" ||
+      drawtype == "multivariate.lognormal")) {
+      stop("Covariance matrices must be provided for multivariate draws.")
+    } else if (drawtype == "multivariate" ||
+      drawtype == "multivariate.lognormal") {
+      covars <- covarsin
+    }
 
     means <- datain$means
     colnames(means) <-  colnames(costflist_template$vessel)[
@@ -31,6 +43,88 @@ make_mult_bounds <- function(
       rownames(draw.mats[[j]]) <- rownames(means)
 
       for (k in colnames(means)) {
+
+        if (drawtype == "lognormal") {
+          meanlogin <- log(means[,k]^2 / sqrt(sds[,k]^2 + means[,k]^2))
+          meanlogin[is.nan(meanlogin)] <- 0
+          meanlogin[is.infinite(meanlogin)] <- 0
+          sdlogin <- sqrt(log(1 + (sds[,k]^2 / means[,k]^2)))
+          sdlogin[is.nan(sdlogin)] <- 0
+          sdlogin[is.infinite(sdlogin)] <- 0
+
+          draw.mats[[j]][,k] = rlnorm(nrow(means),
+            meanlog = meanlogin,
+            sdlog = sdlogin)
+
+          draw.mats[[j]][,k] = ifelse(draw.mats[[j]][,k]>3*sds[,k],3*sds[,k],
+            draw.mats[[j]][,k])
+
+        } else if (drawtype == "multivariate") {
+          # If there is no covariance matrix for this column `k`, set draws to 0
+          if (!(k %in% names(covars))) {
+            draw.mats[[j]][, k] <- 0
+          } else {
+            covk <- covars[[k]]
+            common_rows <- intersect(rownames(means), rownames(covk))
+            if (length(common_rows) == 0) {
+              draw.mats[[j]][, k] <- 0
+            } else {
+              mu_sub <- as.numeric(means[common_rows, k])
+              names(mu_sub) <- common_rows
+              Sigma_sub <- covk[common_rows, common_rows, drop = FALSE]
+              draws_sub <- as.numeric(mvrnorm(1, mu = mu_sub,
+                Sigma = Sigma_sub))
+
+              # put draws for matching rows, zero for others
+              draw.mats[[j]][, k] <- 0
+              draw.mats[[j]][common_rows, k] <- draws_sub
+
+              # enforce non-negativity and replace NA
+              draw.mats[[j]][,k] <- ifelse(draw.mats[[j]][,k] < 0, 0, draw.mats[[j]][,k])
+              draw.mats[[j]][is.na(draw.mats[[j]])] <- 0
+            }
+          }
+
+        } else if (drawtype == "multivariate.lognormal") {
+
+          # If there is no covariance matrix for this column `k`, set draws to 0
+          if (!(k %in% names(covars))) {
+            draw.mats[[j]][, k] <- 0
+          } else {
+            covk <- sing_cov_drop_zero(covars[[k]])
+
+            common_rows <- intersect(rownames(means), rownames(covk))
+            if (length(common_rows) == 0) {
+              draw.mats[[j]][, k] <- 0
+            } else {
+
+            mu_sub <- as.numeric(means[common_rows, k])
+            names(mu_sub) <- common_rows
+            Sigma_sub <- covk[common_rows, common_rows, drop = FALSE]
+
+            checkcounts <- change_names(countsin[countsin$V1 == "REV",
+              !(names(countsin) %in% "V1")])
+
+            if (checkcounts[[k]] <= dim(covk)[1]) {
+              draw.mats[[j]][, k] <- 0
+            } else {
+            draws_sub <- as.numeric(compositions::rnorm.aplus(1,
+              mean = mu_sub, var = Sigma_sub))
+
+            # put draws for matching rows, zero for others
+            draw.mats[[j]][, k] <- 0
+            draw.mats[[j]][common_rows, k] <- draws_sub
+
+            # cap extreme values and replace NA
+            draw.mats[[j]][,k] <- ifelse(draw.mats[[j]][,k] > 5*sds[,k],
+              5*sds[,k], draw.mats[[j]][,k])
+            draw.mats[[j]][is.na(draw.mats[[j]])] <- 0
+            }
+          }
+          }
+
+        } else {
+
         draw.mats[[j]][, k] <- rnorm(nrow(means), mean = means[, k],
           sd = sds[, k])
         # draw.mats[[j]][,k] = rnorm(nrow(means),mean=means[,k],sd=0)
@@ -38,6 +132,8 @@ make_mult_bounds <- function(
         #can't have a negative cost
         draw.mats[[j]][, k] <- ifelse(draw.mats[[j]][, k] < 0, 0,
           draw.mats[[j]][, k])
+
+      }
         draw.mats[[j]][is.na(draw.mats[[j]])] <- 0
       }
 
@@ -101,6 +197,9 @@ make_mult_bounds <- function(
     colnames(row_percentiles_employment) <- c("Perc_025", "Perc_500",
       "Perc_975")
 
+    if (rawiters == TRUE) {
+      return(output)
+    } else {
     return(rbind(
       data.frame(output[[1]][, 1:3], row_percentiles_output,
         MultType = "Output"),
@@ -108,5 +207,5 @@ make_mult_bounds <- function(
         MultType = "Income"),
         data.frame(output[[1]][, 1:3], row_percentiles_employment,
       MultType = "Employment")))
-
+    }
   }
