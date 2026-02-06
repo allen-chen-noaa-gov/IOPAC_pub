@@ -85,11 +85,19 @@ savebounds <- foreach(yearpull = iters, .combine = 'c',
   return(setNames(list(year_result), yearpull))
 }
 
-output_figure5_raw_18t20 <- savebounds[c("y2018", "y2019", "y2020")]
-output_figure5_raw_21t23 <- savebounds[c("y2021", "y2022", "y2023")]
+output_figure5_raw_18 <- savebounds[c("y2018")]
+output_figure5_raw_19 <- savebounds[c("y2019")]
+output_figure5_raw_20 <- savebounds[c("y2020")]
+output_figure5_raw_21 <- savebounds[c("y2021")]
+output_figure5_raw_22 <- savebounds[c("y2022")]
+output_figure5_raw_23 <- savebounds[c("y2023")]
 
-save(output_figure5_raw_18t20, file = here("data", "output_figure5_raw_18t20.rda"))
-save(output_figure5_raw_21t23, file = here("data", "output_figure5_raw_21t23.rda"))
+save(output_figure5_raw_18, file = here("data", "output_figure5_raw_18.rda"))
+save(output_figure5_raw_19, file = here("data", "output_figure5_raw_19.rda"))
+save(output_figure5_raw_20, file = here("data", "output_figure5_raw_20.rda"))
+save(output_figure5_raw_21, file = here("data", "output_figure5_raw_21.rda"))
+save(output_figure5_raw_22, file = here("data", "output_figure5_raw_22.rda"))
+save(output_figure5_raw_23, file = here("data", "output_figure5_raw_23.rda"))
 
 # 4. Shut down the cluster to free up the cores
 stopCluster(cl)
@@ -97,10 +105,16 @@ stopImplicitCluster()
 
 } else {
 
-load(here("data", "output_figure5_raw_18t20.rda"))
-load(here("data", "output_figure5_raw_21t23.rda"))
+load(here("data", "output_figure5_raw_18.rda"))
+load(here("data", "output_figure5_raw_19.rda"))
+load(here("data", "output_figure5_raw_20.rda"))
+load(here("data", "output_figure5_raw_21.rda"))
+load(here("data", "output_figure5_raw_22.rda"))
+load(here("data", "output_figure5_raw_23.rda"))
 
-output_figure5_raw <- c(output_figure5_raw_18t20, output_figure5_raw_21t23)
+output_figure5_raw <- c(output_figure5_raw_18, output_figure5_raw_19,
+  output_figure5_raw_20, output_figure5_raw_21, output_figure5_raw_22,
+  output_figure5_raw_23)
 
 p025 <- list()
 p975 <- list()

@@ -1,8 +1,8 @@
 library(ggplot2)
 library(here)
 
-#your output data .rds file path
-inmat <- readRDS(paste0(here(), "\\data\\", "output.lognormal.2021.rds"))
+load(here("data", "output_figure5_raw_20t21.rda"))
+inmat <- output_figure5_raw_20t21$y2021$lognormal
 
 incmult <- list()
 empmult <- list()
