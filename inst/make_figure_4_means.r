@@ -88,11 +88,15 @@ plot_data <- means_data %>%
     Vessel_Type_Label = paste0(replace_periods(recode(Vessel_Type, !!!vessel_rename)), " (n = ", Count, ")")
   )
 
+plot_data <- plot_data[plot_data$Cost %in% c("Revenue", "Bait",
+  "Captain wages", "Crew wages", "Fuel", "Number of crew",
+  "Repairs and maintenance", "Insurance", "Freight"), ]
+
 # Create plot with error bars
 p <- ggplot(plot_data, aes(x = Vessel_Type_Label, y = Mean, fill = Vessel_Type)) +
   geom_col(alpha = 0.7) +
   geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0.2, alpha = 0.8) +
-  facet_wrap(~Cost, scales = "free_y", ncol = 4) +
+  facet_wrap(~Cost, scales = "free_y", ncol = 3) +
   scale_y_continuous(labels = scales::comma) +
   theme_minimal() +
   theme(

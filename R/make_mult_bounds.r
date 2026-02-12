@@ -142,7 +142,7 @@ make_mult_bounds <- function(
       dataout[, no.data] <- apply(dataout[, !colnames(dataout) %in% no.data], 1,
         mean)
       dataout <- rbind(dataout, prop.income = dataout["REV", ] -
-        colSums(dataout[grep("COST",rownames(dataout)), ]))
+        colSums(dataout[!(rownames(dataout) %in% c("REV", "CREW")), ]))
       output.per.employee <- abs(dataout["REV", ]/dataout["CREW", ])
       dataout <- dataout[!(rownames(dataout) %in% c("REV", "CREW")), ]
       dataout <- prop.table(dataout, 2)

@@ -1,8 +1,14 @@
 library(IOPAC)
 library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(gridExtra)
+library(rsq)
 library(here)
 
-if(file.exists(here("data", "output_figure5.rda")) == FALSE) {
+runiters <- FALSE
+
+if(runiters == TRUE) {
 
 library(foreach)
 library(doParallel)
@@ -14,6 +20,10 @@ iters <- paste0("y",2018:2023)
 
 savebounds <- foreach(yearpull = iters, .combine = 'c',
   .packages = c("IOPAC")) %dopar% {
+
+  drawsin <- 500
+  seedin <- 42
+
   # All calculations for a single year remain inside the parallel loop
   costin <- clean_cost_data(
     sums = costf_V_list[[yearpull]],
@@ -28,8 +38,8 @@ savebounds <- foreach(yearpull = iters, .combine = 'c',
     datain = costin,
     ticsin = tics_list[[yearpull]],
     markupsin = markups_list[[yearpull]],
-    draws = 300,
-    seed = 42,
+    draws = drawsin,
+    seed = seedin,
     drawtype = "normal",
     rawiters = TRUE,
     covarsin = NULL,
@@ -40,8 +50,8 @@ savebounds <- foreach(yearpull = iters, .combine = 'c',
     datain = costin,
     ticsin = tics_list[[yearpull]],
     markupsin = markups_list[[yearpull]],
-    draws = 300,
-    seed = 42,
+    draws = drawsin,
+    seed = seedin,
     drawtype = "lognormal",
     rawiters = TRUE,
     covarsin = NULL,
@@ -52,8 +62,8 @@ savebounds <- foreach(yearpull = iters, .combine = 'c',
     datain = costin,
     ticsin = tics_list[[yearpull]],
     markupsin = markups_list[[yearpull]],
-    draws = 300,
-    seed = 42,
+    draws = drawsin,
+    seed = seedin,
     drawtype = "multivariate",
     rawiters = TRUE,
     covarsin = costf_V_covars_list[[yearpull]],
@@ -64,8 +74,8 @@ savebounds <- foreach(yearpull = iters, .combine = 'c',
     datain = costin,
     ticsin = tics_list[[yearpull]],
     markupsin = markups_list[[yearpull]],
-    draws = 300,
-    seed = 42,
+    draws = drawsin,
+    seed = seedin,
     drawtype = "multivariate.lognormal",
     rawiters = TRUE,
     covarsin = costf_V_covars_log_list[[yearpull]],
@@ -92,12 +102,18 @@ output_figure5_raw_21 <- savebounds[c("y2021")]
 output_figure5_raw_22 <- savebounds[c("y2022")]
 output_figure5_raw_23 <- savebounds[c("y2023")]
 
-save(output_figure5_raw_18, file = here("data", "output_figure5_raw_18.rda"))
-save(output_figure5_raw_19, file = here("data", "output_figure5_raw_19.rda"))
-save(output_figure5_raw_20, file = here("data", "output_figure5_raw_20.rda"))
-save(output_figure5_raw_21, file = here("data", "output_figure5_raw_21.rda"))
-save(output_figure5_raw_22, file = here("data", "output_figure5_raw_22.rda"))
-save(output_figure5_raw_23, file = here("data", "output_figure5_raw_23.rda"))
+save(output_figure5_raw_18, file = here("data",
+  "output_figure5_raw_18.rda"))
+save(output_figure5_raw_19, file = here("data",
+  "output_figure5_raw_19.rda"))
+save(output_figure5_raw_20, file = here("data",
+  "output_figure5_raw_20.rda"))
+save(output_figure5_raw_21, file = here("data",
+  "output_figure5_raw_21.rda"))
+save(output_figure5_raw_22, file = here("data",
+  "output_figure5_raw_22.rda"))
+save(output_figure5_raw_23, file = here("data",
+  "output_figure5_raw_23.rda"))
 
 # 4. Shut down the cluster to free up the cores
 stopCluster(cl)
@@ -113,8 +129,8 @@ load(here("data", "output_figure5_raw_22.rda"))
 load(here("data", "output_figure5_raw_23.rda"))
 
 output_figure5_raw <- c(output_figure5_raw_18, output_figure5_raw_19,
-  output_figure5_raw_20, output_figure5_raw_21, output_figure5_raw_22,
-  output_figure5_raw_23)
+  output_figure5_raw_20, output_figure5_raw_21,
+  output_figure5_raw_22, output_figure5_raw_23)
 
 p025 <- list()
 p975 <- list()
@@ -144,7 +160,6 @@ for (year in names(output_figure5_raw)) {
 
       rawdat[[year]][[method]] <- unlist(lapply(
         output_figure5_raw[[year]][[method]], `[[`, "Vessel_output"))
-
 
       forreg[[year]][[method]] <- do.call(rbind, lapply(output_figure5_raw[[year]][[method]],
         function(x) {
@@ -196,7 +211,6 @@ names(wide_table)[names(wide_table) == "multivariate.lognormal"] <-
 
 # Print the resulting wide table
 # Create table as PNG
-library(gridExtra)
 table_grob <- tableGrob(wide_table, rows = NULL, theme = ttheme_default(
   core = list(fg_params = list(hjust = 0, x = 0.05, fontsize = 12)),
   colhead = list(fg_params = list(hjust = 0, x = 0.05, fontsize = 10, fontface = "bold")),
@@ -235,11 +249,9 @@ p <- ggplot(data = forplot, aes(x = ind, y = values, fill = ind)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
 
 ggsave(paste0(here(), "\\inst\\", "figure_5_multbounds.png"), 
-  plot = p, width = 8, height = 8, dpi = 300, bg = "white")
+  plot = p, width = 8, height = 6, dpi = 300, bg = "white")
 
 regdata <- bind_rows(forregout, .id = "Year")
-
-library(rsq)
 
 Region <- list()
 Year <- list()
@@ -278,7 +290,7 @@ r2table <- rbind(data.frame(Factor = "Fleet", bind_rows(Name,
   .id = "Distribution")),
       data.frame(Factor = "Year", bind_rows(Year, .id = "Distribution")),
       data.frame(Factor = "Region", bind_rows(Region, .id = "Distribution"))) %>%
-  mutate(across(where(is.numeric), round, 2))
+  mutate(across(where(is.numeric), \(x) round(x, 2)))
 
 names(r2table)[names(r2table) == "normal"] <- "Normal"
 names(r2table)[names(r2table) == "lognormal"] <- "Lognormal"
@@ -288,7 +300,6 @@ names(r2table)[names(r2table) == "multivariate.lognormal"] <-
 
 # Print the resulting wide table
 # Create table as PNG
-library(gridExtra)
 table_grob <- tableGrob(r2table, rows = NULL, theme = ttheme_default(
   core = list(fg_params = list(hjust = 0, x = 0.05, fontsize = 12)),
   colhead = list(fg_params = list(hjust = 0, x = 0.05, fontsize = 10, fontface = "bold")),
