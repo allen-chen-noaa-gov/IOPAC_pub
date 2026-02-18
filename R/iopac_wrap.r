@@ -7,7 +7,7 @@ iopac_wrap <- function(impbridgein = impbridgelist,
   prodflowin = prodflow,
   markupsin = markups_list$y2023,
   fskeyin = fskey,
-  comnamesin = comnames) {
+  comnamesin = comnames, ...) {
   #' Create all IOPAC multipliers
   #'
   #' A high-level wrapper function to create impact multipliers
@@ -63,7 +63,7 @@ results <- lapply(names(ticsin), function(i) {
       sector = i,
       ticsin = ticsin[[i]],
       ecpi = ecpiin,
-      taxes = taxesin)
+      taxes = taxesin, ...)
   })
   names(Vessel) <- paste0("Vessel_", c("output", "income", "employment"))
 

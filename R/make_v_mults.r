@@ -1,5 +1,5 @@
 make_v_mults <- function(impbridge, costf, mults, type, sector, ticsin, ecpi,
-    taxes, output = NULL) {
+    taxes, output = NULL, zeroprop = TRUE, zeropropdir = FALSE) {
     #' Create IOPAC vessel multipliers
     #'
     #' A function that creates impact multipliers for vessels
@@ -67,11 +67,27 @@ empcomp <- colSums(as.data.frame(costf[costf$Type %in% c("Captain", "Crew"),
     !names(costf) %in% c("ID", "Type", "Cost")]))*impact*
     ecpi[ecpi$Type == paste0("EmpComp", type), c(sector)]
 
+
+if(zeroprop == TRUE){
+costftemp <- costf
+
+costftemp[costftemp$Type %in% c("Proprietary income"),
+  !names(costftemp) %in% c("ID", "Type", "Cost")][
+    costftemp[costftemp$Type %in% c("Proprietary income"),
+    !names(costftemp) %in% c("ID", "Type", "Cost")] < 0] <- 0
+
+propinc <- colSums(as.data.frame(costftemp[costftemp$Type %in%
+  c("Purchases of permits", "Leasing of permits", "Proprietary income"),
+    !names(costftemp) %in% c("ID", "Type", "Cost")]))*impact*
+    ecpi[ecpi$Type == paste0("PropInc", type), c(sector)]
+
+} else {
 # G. Calculate indirect impacts from PI
 propinc <- colSums(as.data.frame(costf[costf$Type %in% c("Purchases of permits",
         "Leasing of permits", "Proprietary income"),
     !names(costf) %in% c("ID", "Type", "Cost")]))*impact*
     ecpi[ecpi$Type == paste0("PropInc", type), c(sector)]
+}
 
 # H. Calculate indirect impacts from taxes/license fees
 looktaxes <- colSums(as.data.frame(costf[costf$Type %in% c("Landings Taxes"),
@@ -92,15 +108,27 @@ sumdirect <- inteff + empcomp + propinc + looktaxes + impact
 # J. Calculate income impacts by adding together expenditures + employee wages +
 # prop income + taxes + direct income
 # note ecpi gives you the region-specific multiplier for income
-sumdirect <- inteff + empcomp + propinc + looktaxes +
-  colSums(as.data.frame(costf[costf$Type %in% c("Captain", "Crew",
-    "Purchases of permits", "Leasing of permits", "Proprietary income"),
-  !names(costf) %in% c("ID", "Type", "Cost")]))*impact
+if(zeropropdir == TRUE){
+costftemp <- costf
 
+costftemp[costftemp$Type %in% c("Proprietary income"),
+  !names(costftemp) %in% c("ID", "Type", "Cost")][
+    costftemp[costftemp$Type %in% c("Proprietary income"),
+    !names(costftemp) %in% c("ID", "Type", "Cost")] < 0] <- 0
+
+dirinc <- colSums(as.data.frame(costftemp[costftemp$Type %in% c("Captain",
+  "Crew", "Purchases of permits", "Leasing of permits", "Proprietary income"),
+    !names(costftemp) %in% c("ID", "Type", "Cost")]))*impact
+} else {
 dirinc <- colSums(as.data.frame(costf[costf$Type %in% c("Captain", "Crew",
   "Purchases of permits", "Leasing of permits", "Proprietary income"),
     !names(costf) %in% c("ID", "Type", "Cost")]))*impact
+}
+
 indirinc <- inteff + empcomp + propinc + looktaxes
+
+sumdirect <- inteff + empcomp + propinc + looktaxes + dirinc
+
 } else if (type == "Employment") {
 
 # K. Calculate income impacts by adding together expenditures + employee wages +

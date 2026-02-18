@@ -167,17 +167,17 @@ fskey <- cbind(fskey, procoutcoef)
 
 # Calculate averages for each gear type, handling all NA cases
 calc_avg <- function(x) {
-  vals <- procrev$procrev[x == 1]
+  vals <- fskey$procoutcoef[fskey[, x] == 1]
   if (all(is.na(vals))) NaN else mean(vals, na.rm = TRUE)
 }
 
 # Check last four rows of ticsprop, set trawlavg, fgavg, netavg, othavg to NaN if their row is all NaN
 last4 <- as.matrix(ticsprop[(nrow(ticsprop)-3):nrow(ticsprop), ])
 
-trawlavg <- if (all(is.nan(last4[1, ]))) NaN else calc_avg(fskey$Trawl)
-fgavg    <- if (all(is.nan(last4[2, ]))) NaN else calc_avg(fskey$FG)
-netavg   <- if (all(is.nan(last4[3, ]))) NaN else calc_avg(fskey$Net)
-othavg   <- if (all(is.nan(last4[4, ]))) NaN else calc_avg(fskey$Other)
+trawlavg <- if (all(is.nan(last4[1, ]))) NaN else calc_avg("Trawl")
+fgavg    <- if (all(is.nan(last4[2, ]))) NaN else calc_avg("FG")
+netavg   <- if (all(is.nan(last4[3, ]))) NaN else calc_avg("Net")
+othavg   <- if (all(is.nan(last4[4, ]))) NaN else calc_avg("Other")
 
 #calculate last four rows (Erin can ignore this step)
 procoutcoef <- c(procoutcoef, trawlavg, fgavg, netavg, othavg)
