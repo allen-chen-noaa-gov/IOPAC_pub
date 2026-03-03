@@ -157,11 +157,11 @@ make_mult_bounds <- function(
 
     #could be TotOut, TotInc, TotEmp
     vessel_output <- lapply(output, function(x) x %>%
-      select(Vessel_output))
+      dplyr::select(Vessel_output))
     vessel_income <- lapply(output, function(x) x %>%
-      select(Vessel_income))
+      dplyr::select(Vessel_income))
     vessel_employment <- lapply(output, function(x) x %>%
-      select(Vessel_employment))
+      dplyr::select(Vessel_employment))
     vessel_output <- do.call(cbind, vessel_output)
     vessel_income <- do.call(cbind, vessel_income)
     vessel_employment <- do.call(cbind, vessel_employment)
