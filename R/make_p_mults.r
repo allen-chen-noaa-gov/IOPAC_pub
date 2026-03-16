@@ -53,6 +53,9 @@ options(stringsAsFactors = FALSE)
 prodf <- merge(impbridge[c("ID", "Type", "Share")],
     costf[c("Type", "Value", "ShareC")], by = c("Type"), all.x = TRUE)
 
+# Set Share to 0 if Fish purchases
+prodf[prodf$Type == 'Fish purchases', "Share"] <- 0
+
 # There's a multiplier for rental/lease, but Jerry would manually zero out the cost
 prodf[prodf$Type == 'Rental or lease of buildings, job-site trailers, and other structures',
     c("Value", "ShareC")] <- 0

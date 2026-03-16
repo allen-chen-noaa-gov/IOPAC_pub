@@ -235,7 +235,8 @@ forplot <- forplot %>%
       ind == "multivariate" ~ "Multivariate",
       ind == "multivariate.lognormal" ~ "Multivariate Lognormal",
       TRUE ~ ind # Keep all other values as they are
-    )
+    ),
+    ind = factor(ind, levels = c("Normal", "Lognormal", "Multivariate", "Multivariate Lognormal"))
   )
 
 p <- ggplot(data = forplot, aes(x = ind, y = values, fill = ind)) + 

@@ -189,6 +189,9 @@ label_df <- label_df %>%
 map_lon_range <- range(c(unmatched_map$lon, merged$lon), na.rm = TRUE)
 map_xlim <- c(map_lon_range[1] - 2.7, map_lon_range[2])
 
+# Get state boundaries for WA, OR, CA
+state_bounds <- map_data("state", c("washington", "oregon", "california"))
+
 # base plot: draw unmatched map counties as unfilled outlines behind the colored map
 p <- ggplot() +
   geom_polygon(data = unmatched_map,
@@ -197,6 +200,9 @@ p <- ggplot() +
   geom_polygon(data = merged,
                aes(x = lon, y = lat, group = group, fill = io_group),
                color = "black", size = 0.2) +
+  geom_polygon(data = state_bounds,
+               aes(x = long, y = lat, group = group),
+               fill = NA, color = "black", size = 1) +
   scale_fill_manual(values = vals, name = "IOPAC port group", guide = "none") +
   coord_map(xlim = map_xlim) +
   theme_void()
