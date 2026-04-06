@@ -114,7 +114,7 @@ catsv <- make_v_cat_mults(impbridge = impbridgelist,
   output = NULL,
   zeroprop = TRUE,
   zeropropdir = FALSE)
-head(catsv)
+head(catsv, n = c(6, 3))
 
 catsp <- make_p_cat_mults(impbridge = impbridgelist,
   costf = costflist_2023,
@@ -128,7 +128,7 @@ catsp <- make_p_cat_mults(impbridge = impbridgelist,
   prodflow = prodflow,
   fskey = fskey,
   markups = markups_list$y2023)
-head(catsp)
+head(catsp, n = c(6, 3))
 ```
 
 The package also includes a number of data sets that can produce multipliers for the West Coast region, and documentation for all included data can also be found similarily (typing ?data). The default data used are the most most recent, but the years 2017 through 2023 are included for cost, markup, and fish ticket data where available.
