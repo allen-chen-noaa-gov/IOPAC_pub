@@ -99,6 +99,38 @@ The wrapper function creates multipliers for the vessel and processor through th
 
 Therefore, `make_v_mults` and `make_p_mults` create the multipliers, while `iopac_wrap` passes the relevant data to the functions.
 
+The individual `make_v_cat_mults` and `make_p_cat_mults` functions can also be used to create commodity-level multipliers for vessels and processors respectively, which can be used to understand the contributions of specific commodities to the overall multipliers:
+
+```{r, eval=TRUE}
+catsv <- make_v_cat_mults(impbridge = impbridgelist,
+  costf = costflist_2023,
+  mults = mults,
+  type = "Output",
+  sector = "Oregon",
+  ticsin = tics_list$y2023,
+  ecpi = ecpi,
+  taxes = taxes,
+  comnamesin = comnames,
+  output = NULL,
+  zeroprop = TRUE,
+  zeropropdir = FALSE)
+head(catsv)
+
+catsp <- make_p_cat_mults(impbridge = impbridgelist,
+  costf = costflist_2023,
+  mults = mults,
+  type = "Output",
+  sector = "Oregon",
+  ticsin = tics_list$y2023,
+  ecpi = ecpi,
+  taxes = taxes,
+  comnamesin = comnames,
+  prodflow = prodflow,
+  fskey = fskey,
+  markups = markups_list$y2023)
+head(catsp)
+```
+
 The package also includes a number of data sets that can produce multipliers for the West Coast region, and documentation for all included data can also be found similarily (typing ?data). The default data used are the most most recent, but the years 2017 through 2023 are included for cost, markup, and fish ticket data where available.
 
 ```{r, eval=FALSE}

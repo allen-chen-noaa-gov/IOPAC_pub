@@ -67,7 +67,6 @@ empcomp <- colSums(as.data.frame(costf[costf$Type %in% c("Captain", "Crew"),
     !names(costf) %in% c("ID", "Type", "Cost")]))*impact*
     ecpi[ecpi$Type == paste0("EmpComp", type), c(sector)]
 
-
 if(zeroprop == TRUE){
 costftemp <- costf
 
@@ -163,7 +162,7 @@ dfout <- ticsprop*t(replicate(nrow(ticsprop), mults))
     }
   }
 
-vesoutcoef <- rowSums(dfout)
+vesoutcoef <- rowSums(dfout, na.rm = TRUE)
 
 if (is.null(output)) {
   return(vesoutcoef)

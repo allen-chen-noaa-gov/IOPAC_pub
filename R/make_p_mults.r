@@ -164,27 +164,27 @@ procrevmult <- replicate(dim(ticsprop)[2], (procrev$procrev*mults)/impact)
 # all(dim(ticsprop[1:(nrow(ticsprop)-4),]) ==
     # dim(replicate(dim(ticsprop)[2], (procrev$procrev*mults)/impact)))
 #drop last four rows because they're calculated below, different aggregation
-procoutcoef <- rowSums(ticsprop[1:(nrow(ticsprop) - 4), ]*procrevmult)
-
-fskey <- cbind(fskey, procoutcoef)
+procoutcoef <- rowSums(ticsprop[1:(nrow(ticsprop) - 4), ]*procrevmult,
+  na.rm = TRUE)
+fskeytemp <- cbind(fskey, procoutcoef)
 
 # Calculate averages for each gear type, handling all NA cases
-calc_avg <- function(x) {
-  vals <- fskey$procoutcoef[fskey[, x] == 1]
+calc_avg <- function(x, fskeytemp) {
+  vals <- fskeytemp$procoutcoef[fskeytemp[, x] == 1]
   if (all(is.na(vals))) NaN else mean(vals, na.rm = TRUE)
 }
 
 # Check last four rows of ticsprop, set trawlavg, fgavg, netavg, othavg to NaN if their row is all NaN
 last4 <- as.matrix(ticsprop[(nrow(ticsprop)-3):nrow(ticsprop), ])
 
-trawlavg <- if (all(is.nan(last4[1, ]))) NaN else calc_avg("Trawl")
-fgavg    <- if (all(is.nan(last4[2, ]))) NaN else calc_avg("FG")
-netavg   <- if (all(is.nan(last4[3, ]))) NaN else calc_avg("Net")
-othavg   <- if (all(is.nan(last4[4, ]))) NaN else calc_avg("Other")
+trawlavg <- if (all(is.nan(last4[1, ]))) NaN else calc_avg("Trawl", fskeytemp)
+fgavg    <- if (all(is.nan(last4[2, ]))) NaN else calc_avg("FG", fskeytemp)
+netavg   <- if (all(is.nan(last4[3, ]))) NaN else calc_avg("Net", fskeytemp)
+othavg   <- if (all(is.nan(last4[4, ]))) NaN else calc_avg("Other", fskeytemp)
 
 #calculate last four rows (Erin can ignore this step)
-procoutcoef <- c(procoutcoef, trawlavg, fgavg, netavg, othavg)
+procoutcoefout <- c(procoutcoef, trawlavg, fgavg, netavg, othavg)
 
-return(procoutcoef)
+return(procoutcoefout)
 
 }
