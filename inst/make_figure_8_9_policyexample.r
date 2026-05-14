@@ -4,7 +4,7 @@ library(dplyr)
 library(gridExtra)
 
 load(here("data", "output_figure5_raw_21.rda"))
-inmat <- output_figure5_raw_21$y2021$lognormal
+inmat <- output_figure5_raw_21$y2021$multivariate.lognormal
 
 poltab <- read.csv(paste0(here(), "\\inst\\extdata\\", "policyex.csv"))
 poltab <- poltab[poltab$Year < 2027, ]
@@ -147,7 +147,7 @@ p_results_table <- ggplot() +
   annotation_custom(results_table_grob) +
   theme_void()
 
-ggsave(paste0(here(), "\\inst\\", "table_4_policy_comparison_results.png"),
+ggsave(paste0(here(), "\\inst\\", "table_5_policy_comparison_results.png"),
   plot = p_results_table,
   width = 6.5,
   height = 2,
@@ -186,7 +186,7 @@ p <- ggplot(plotinc, aes(x=Year, y=Income, colour=Policy, shape=Policy)) +
     geom_point(position=pd, size=3, fill="white") +
     scale_shape_manual(values = c("No Action" = 21, "Alt 1" = 22, "Alt 2" = 23))
 
-ggsave(paste0(here(), "\\inst\\", "figure_6_incomeex.png"), plot = p,
+ggsave(paste0(here(), "\\inst\\", "figure_8_incomeex.png"), plot = p,
   width = 16, height = 9, units = "cm")
 
 empnoaction <- data.frame(Year = poltab$Year, Emp = emprat*poltab$NoAction,
@@ -213,7 +213,7 @@ p <- ggplot(plotemp, aes(x=Year, y=Emp, colour=Policy, shape=Policy)) +
       y = "Employment"
     )
 
-ggsave(paste0(here(), "\\inst\\", "figure_7_empex.png"), plot = p,
+ggsave(paste0(here(), "\\inst\\", "figure_9_empex.png"), plot = p,
   width = 16, height = 9,
   units = "cm")
 
