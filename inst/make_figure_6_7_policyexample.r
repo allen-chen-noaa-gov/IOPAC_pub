@@ -2,6 +2,7 @@ library(ggplot2)
 library(here)
 library(dplyr)
 library(gridExtra)
+library(grid)
 
 load(here("data", "output_figure5_raw_21.rda"))
 inmat <- output_figure5_raw_21$y2021$lognormal
@@ -16,7 +17,6 @@ empout <- list()
 incmultout <- list()
 empmultout <- list()
 for (i in 1:length(inmat)) {
-
 incmult[[i]] <- inmat[[i]]$TotInc[
   inmat[[i]]$Name == "Other Groundfish, Fixed Gear" &
   inmat[[i]]$Region == "WC"]
@@ -33,7 +33,6 @@ empout[[i]] <- allrev*empmult[[i]]
 
 incmultout[[i]] <- incmult[[i]] 
 empmultout[[i]] <- empmult[[i]] 
-
 }
 
 # 20581180 rev per 21 MT rockfish see page B-43 of Appendix B
@@ -51,12 +50,11 @@ results_df <- data.frame(
   stringsAsFactors = FALSE
 )
 
-# Common Language Effect Size (CLES) function
+# Common Language Effect Size (CLES) function - all permutations
 calc_cles <- function(x, y) {
-  n_x <- length(x)
-  n_y <- length(y)
-  comparisons <- sum(rep(x, n_y) > rep(y, each = n_x))
-  cles <- comparisons / (n_x * n_y)
+  # All pairwise comparisons (length(x) x length(y) = 250,000 for 500x500)
+  pairwise_comps <- outer(x, y, ">")
+  cles <- sum(pairwise_comps) / length(pairwise_comps)
   return(cles)
 }
 
@@ -64,30 +62,32 @@ calc_cles <- function(x, y) {
 for (i in 1:nrow(poltab)) {
   year <- poltab$Year[i]
   
-  # Policy factors for this year
   noaction <- poltab$NoAction[i]
   alt1 <- poltab$Alt1[i]
   alt2 <- poltab$Alt2[i]
   
-  # Income distributions for each policy (scaled appropriately)
+  # Income
   inc_unlisted <- unlist(incout)/1000000/21 * noaction
   inc_unlisted1 <- unlist(incout)/1000000/21 * alt1
   inc_unlisted2 <- unlist(incout)/1000000/21 * alt2
   
-  # Employment distributions for each policy
+  # Employment
   emp_unlisted <- unlist(empout)/21 * noaction
   emp_unlisted1 <- unlist(empout)/21 * alt1
   emp_unlisted2 <- unlist(empout)/21 * alt2
   
-  # Define comparisons: Alt2 vs Alt1, Alt1 vs NoAction, Alt2 vs NoAction
+  # Alt2 vs Alt1, Alt1 vs NoAction, Alt2 vs NoAction
   comparisons <- list(
-    list(name = "Alt2 vs Alt1", x_inc = inc_unlisted2, y_inc = inc_unlisted1, x_emp = emp_unlisted2, y_emp = emp_unlisted1),
-    list(name = "Alt1 vs NoAction", x_inc = inc_unlisted1, y_inc = inc_unlisted, x_emp = emp_unlisted1, y_emp = emp_unlisted),
-    list(name = "Alt2 vs NoAction", x_inc = inc_unlisted2, y_inc = inc_unlisted, x_emp = emp_unlisted2, y_emp = emp_unlisted)
+    list(name = "Alt2 vs Alt1", x_inc = inc_unlisted2, y_inc = inc_unlisted1,
+      x_emp = emp_unlisted2, y_emp = emp_unlisted1),
+    list(name = "Alt1 vs NoAction", x_inc = inc_unlisted1,
+      y_inc = inc_unlisted, x_emp = emp_unlisted1, y_emp = emp_unlisted),
+    list(name = "Alt2 vs NoAction", x_inc = inc_unlisted2,
+      y_inc = inc_unlisted, x_emp = emp_unlisted2, y_emp = emp_unlisted)
   )
   
   for (comp in comparisons) {
-    # Income comparison
+    # Income
     cles_inc <- calc_cles(comp$x_inc, comp$y_inc)
     p_inc <- wilcox.test(comp$x_inc, comp$y_inc)$p.value
     
@@ -99,7 +99,7 @@ for (i in 1:nrow(poltab)) {
       p_value = round(p_inc, 4)
     ))
     
-    # Employment comparison
+    # Employment
     cles_emp <- calc_cles(comp$x_emp, comp$y_emp)
     p_emp <- wilcox.test(comp$x_emp, comp$y_emp)$p.value
     
@@ -113,7 +113,7 @@ for (i in 1:nrow(poltab)) {
   }
 }
 
-# Convert results to wide format for table output
+# Convert to wide
 results_wide <- results_df %>%
   mutate(Comparison = gsub(" ", "_", Comparison)) %>%
   tidyr::pivot_wider(
@@ -123,22 +123,26 @@ results_wide <- results_df %>%
     names_glue = "{Comparison}_{Metric}_{.value}"
   )
 
-# Create one combined table for all comparisons, keeping only CLES columns
+# Create one combined table
 comparison_order <- c("Alt2_vs_Alt1", "Alt1_vs_NoAction", "Alt2_vs_NoAction")
 results_wide_display <- results_wide %>%
   select(Year, dplyr::all_of(c(
     paste0(comparison_order, "_Income_CLES"),
     paste0(comparison_order, "_Employment_CLES")
   )))
-colnames(results_wide_display)[-1] <- gsub("_vs_", " > ", colnames(results_wide_display)[-1])
-colnames(results_wide_display)[-1] <- gsub("_", "\n", colnames(results_wide_display)[-1])
+
+colnames(results_wide_display)[-1] <- gsub("_vs_", " > ",
+  colnames(results_wide_display)[-1])
+colnames(results_wide_display)[-1] <- gsub("_", "\n",
+  colnames(results_wide_display)[-1])
 
 results_table_grob <- gridExtra::tableGrob(
   results_wide_display,
   rows = NULL,
   theme = ttheme_default(
     core = list(fg_params = list(hjust = 0, x = 0.05, fontsize = 10)),
-    colhead = list(fg_params = list(hjust = 0.5, x = 0.5, fontsize = 9, fontface = "bold")),
+    colhead = list(fg_params = list(hjust = 0.5, x = 0.5, fontsize = 9,
+      fontface = "bold")),
     padding = unit(c(1, 1), "mm")
   )
 )
@@ -147,13 +151,118 @@ p_results_table <- ggplot() +
   annotation_custom(results_table_grob) +
   theme_void()
 
-ggsave(paste0(here(), "\\inst\\", "table_4_policy_comparison_results.png"),
+ggsave(paste0(here(), "\\inst\\", "table_4_lognormal_cles.png"),
   plot = p_results_table,
   width = 6.5,
   height = 2,
   dpi = 300,
   bg = "white"
 )
+
+# income per-iteration CI
+inc_noaction_mat <- do.call(rbind, lapply(incout, function(x) (x/1000000/21) * poltab$NoAction))
+inc_alt1_mat    <- do.call(rbind, lapply(incout, function(x) (x/1000000/21) * poltab$Alt1))
+inc_alt2_mat    <- do.call(rbind, lapply(incout, function(x) (x/1000000/21) * poltab$Alt2))
+
+# employment per-iteration CI
+emp_noaction_mat <- do.call(rbind, lapply(empout, function(x) (x/21) * poltab$NoAction))
+emp_alt1_mat     <- do.call(rbind, lapply(empout, function(x) (x/21) * poltab$Alt1))
+emp_alt2_mat     <- do.call(rbind, lapply(empout, function(x) (x/21) * poltab$Alt2))
+
+# median and CIs by column (year)
+col_median <- function(mat) apply(mat, 2, median)
+col_q025   <- function(mat) apply(mat, 2, quantile, probs = 0.025)
+col_q975   <- function(mat) apply(mat, 2, quantile, probs = 0.975)
+
+# differences per iteration
+inc_diff_alt2_vs_alt1 <- inc_alt2_mat - inc_alt1_mat
+inc_diff_alt1_vs_noaction <- inc_alt1_mat - inc_noaction_mat
+inc_diff_alt2_vs_noaction <- inc_alt2_mat - inc_noaction_mat
+
+emp_diff_alt2_vs_alt1 <- emp_alt2_mat - emp_alt1_mat
+emp_diff_alt1_vs_noaction <- emp_alt1_mat - emp_noaction_mat
+emp_diff_alt2_vs_noaction <- emp_alt2_mat - emp_noaction_mat
+
+# Income differences
+inc_alt2_vs_alt1_df <- data.frame(
+  Year = poltab$Year,
+  Diff = col_median(inc_diff_alt2_vs_alt1),
+  Diff025 = col_q025(inc_diff_alt2_vs_alt1),
+  Diff975 = col_q975(inc_diff_alt2_vs_alt1),
+  Comparison = "Alt 2 > Alt 1"
+)
+
+inc_alt1_vs_noaction_df <- data.frame(
+  Year = poltab$Year,
+  Diff = col_median(inc_diff_alt1_vs_noaction),
+  Diff025 = col_q025(inc_diff_alt1_vs_noaction),
+  Diff975 = col_q975(inc_diff_alt1_vs_noaction),
+  Comparison = "Alt 1 > No Action"
+)
+
+inc_alt2_vs_noaction_df <- data.frame(
+  Year = poltab$Year,
+  Diff = col_median(inc_diff_alt2_vs_noaction),
+  Diff025 = col_q025(inc_diff_alt2_vs_noaction),
+  Diff975 = col_q975(inc_diff_alt2_vs_noaction),
+  Comparison = "Alt 2 > No Action"
+)
+
+# Employment differences
+emp_alt2_vs_alt1_df <- data.frame(
+  Year = poltab$Year,
+  Diff = col_median(emp_diff_alt2_vs_alt1),
+  Diff025 = col_q025(emp_diff_alt2_vs_alt1),
+  Diff975 = col_q975(emp_diff_alt2_vs_alt1),
+  Comparison = "Alt 2 > Alt 1"
+)
+
+emp_alt1_vs_noaction_df <- data.frame(
+  Year = poltab$Year,
+  Diff = col_median(emp_diff_alt1_vs_noaction),
+  Diff025 = col_q025(emp_diff_alt1_vs_noaction),
+  Diff975 = col_q975(emp_diff_alt1_vs_noaction),
+  Comparison = "Alt 1 > No Action"
+)
+
+emp_alt2_vs_noaction_df <- data.frame(
+  Year = poltab$Year,
+  Diff = col_median(emp_diff_alt2_vs_noaction),
+  Diff025 = col_q025(emp_diff_alt2_vs_noaction),
+  Diff975 = col_q975(emp_diff_alt2_vs_noaction),
+  Comparison = "Alt 2 > No Action"
+)
+
+# dataframes for plotting
+inc_diff_all <- rbind(inc_alt2_vs_alt1_df, inc_alt1_vs_noaction_df, inc_alt2_vs_noaction_df)
+emp_diff_all <- rbind(emp_alt2_vs_alt1_df, emp_alt1_vs_noaction_df, emp_alt2_vs_noaction_df)
+
+# Add Metric column to differences dataframes
+inc_diff_all$Metric <- "Dollars, millions"
+emp_diff_all$Metric <- "Employment, jobs"
+
+# Combine income and employment differences
+diff_combined <- rbind(inc_diff_all, emp_diff_all)
+
+# Plot combined differences
+p_diff_combined <- ggplot(diff_combined, aes(x = Year, y = Diff, colour = Comparison, shape = Comparison)) +
+  geom_ribbon(aes(ymin = Diff025, ymax = Diff975, fill = Comparison, colour = Comparison), width = 0.5,
+    position = position_dodge(0.1), alpha = 0.2) +
+  geom_line(position = position_dodge(0.1), size = 1) +
+  geom_point(position = position_dodge(0.1), size = 3, fill = "white") +
+  scale_shape_manual(values = c("Alt 2 > Alt 1" = 21, "Alt 1 > No Action" = 22, "Alt 2 > No Action" = 23)) +
+  scale_colour_manual(values = c("Alt 2 > Alt 1" = "#F8766D", "Alt 1 > No Action" = "#7CAE00", "Alt 2 > No Action" = "#00BFC4")) +
+  scale_fill_manual(values = c("Alt 2 > Alt 1" = "#F8766D", "Alt 1 > No Action" = "#7CAE00", "Alt 2 > No Action" = "#00BFC4")) +
+  facet_wrap(~Metric, scales = "free_y") +
+  labs(x = "Year",
+       y = "Difference (Median with 95% CI)",
+       colour = "Comparison",
+       shape = "Comparison") +
+  theme_minimal()
+
+ggsave(paste0(here(), "\\inst\\", "figure_7_lognormal_differences.png"),
+  plot = p_diff_combined,
+  width = 20, height = 9, units = "cm", dpi = 300)
 
 incrat <- (median(unlist(incout))/1000000)/21
 emprat <- (median(unlist(empout)))/21
@@ -176,18 +285,12 @@ incalt2 <- data.frame(Year = poltab$Year, Income = incrat*poltab$Alt2,
   Income025 = inc05*poltab$Alt2, Income975 = inc95*poltab$Alt2, 
   Policy = "Alt 2")
 
+# Income data with Metric column
 plotinc <- rbind(incnoaction, incalt1, incalt2)
-
-pd <- position_dodge(0.1) # move them .05 to the left and right
-
-p <- ggplot(plotinc, aes(x=Year, y=Income, colour=Policy, shape=Policy)) + 
-    geom_errorbar(aes(ymin=Income025, ymax=Income975), width=.5, position=pd) +
-    geom_line(position=pd, size = 1) +
-    geom_point(position=pd, size=3, fill="white") +
-    scale_shape_manual(values = c("No Action" = 21, "Alt 1" = 22, "Alt 2" = 23))
-
-ggsave(paste0(here(), "\\inst\\", "figure_6_incomeex.png"), plot = p,
-  width = 16, height = 9, units = "cm")
+plotinc$Metric <- "Dollars, millions"
+plotinc$Value <- plotinc$Income
+plotinc$Value025 <- plotinc$Income025
+plotinc$Value975 <- plotinc$Income975
 
 empnoaction <- data.frame(Year = poltab$Year, Emp = emprat*poltab$NoAction,
   Emp025 = emp05*poltab$NoAction, Emp975 = emp95*poltab$NoAction, 
@@ -201,21 +304,34 @@ empalt2 <- data.frame(Year = poltab$Year, Emp = emprat*poltab$Alt2,
   Emp025 = emp05*poltab$Alt2, Emp975 = emp95*poltab$Alt2, 
   Policy = "Alt 2")
 
+# Employment data with Metric column
 plotemp <- rbind(empnoaction, empalt1, empalt2)
+plotemp$Metric <- "Employment, jobs"
+plotemp$Value <- plotemp$Emp
+plotemp$Value025 <- plotemp$Emp025
+plotemp$Value975 <- plotemp$Emp975
 
-p <- ggplot(plotemp, aes(x=Year, y=Emp, colour=Policy, shape=Policy)) + 
-    geom_errorbar(aes(ymin=Emp025, ymax=Emp975), width=.5, position=pd) +
+# Combine income and employment data
+plot_combined <- rbind(
+  plotinc[, c("Year", "Policy", "Metric", "Value", "Value025", "Value975")],
+  plotemp[, c("Year", "Policy", "Metric", "Value", "Value025", "Value975")]
+)
+
+pd <- position_dodge(0.1)
+
+p <- ggplot(plot_combined, aes(x=Year, y=Value, colour=Policy, shape=Policy)) + 
+    geom_ribbon(aes(ymin=Value025, ymax=Value975, fill=Policy, colour=Policy), alpha=0.2) +
     geom_line(position=pd, size = 1) +
     geom_point(position=pd, size=3, fill="white") +
     scale_shape_manual(values =
       c("No Action" = 21, "Alt 1" = 22, "Alt 2" = 23)) +
-    labs(
-      y = "Employment"
-    )
+    scale_colour_manual(values = c("No Action" = "#F8766D", "Alt 1" = "#7CAE00", "Alt 2" = "#00BFC4")) +
+    scale_fill_manual(values = c("No Action" = "#F8766D", "Alt 1" = "#7CAE00", "Alt 2" = "#00BFC4")) +
+    facet_wrap(~Metric, scales = "free_y") +
+    theme_minimal()
 
-ggsave(paste0(here(), "\\inst\\", "figure_7_empex.png"), plot = p,
-  width = 16, height = 9,
-  units = "cm")
+ggsave(paste0(here(), "\\inst\\", "figure_6_lognormal_lines.png"), plot = p,
+  width = 20, height = 9, units = "cm")
 
 outtable <- data.frame(poltab, NoAction_Income = incrat*poltab$NoAction, 
   Alt1_Income = incrat*poltab$Alt1, Alt2_Income = incrat*poltab$Alt2,
