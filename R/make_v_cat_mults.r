@@ -10,7 +10,7 @@ make_v_cat_mults <- function(impbridge = impbridgelist,
   output = NULL,
   zeroprop = TRUE,
   zeropropdir = FALSE) {
-
+ 
   impbridge <- impbridge[["vessel"]]
   costf <- costf[["vessel"]]
   ticsin <- ticsin[[sector]]
@@ -66,7 +66,8 @@ make_v_cat_mults <- function(impbridge = impbridgelist,
       !names(costf) %in% c("ID", "Type", "Cost")]))*impact*
       taxes[taxes$Type == type, sector]
   if (length(looktaxes) == 0) {
-      looktaxes <- 0
+      looktaxes <- setNames(rep(0, dim(inteffagg)[2]-1),
+        names(inteffagg)[2:ncol(inteffagg)])
   }
 
   # Add looktaxes as a row in inteffagg

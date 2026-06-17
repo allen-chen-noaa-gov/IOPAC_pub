@@ -112,7 +112,8 @@ make_p_cat_mults <- function(impbridge = impbridgelist,
       sum(costf$ShareC[costf$Type %in% c("Licensing Fees", "Taxes")]) *
       taxes[taxes$Type == type, sector]
   if (length(looktaxes) == 0) {
-      looktaxes <- 0
+      looktaxes <- setNames(rep(0, dim(inteffagg)[2]-1),
+        names(inteffagg)[2:ncol(inteffagg)])
   }
 
   # Add looktaxes as a row
