@@ -1,17 +1,44 @@
-"Region"
-"California Whole "
-"NCC MendSonoma "
-"NCC SanFran "
-"North Coast "
-"SCC "
-"South Coast "
-"Astoria "
-"Brookings "
-"Coos Bay "
-"Newport "
-"Oregon Whole "
-"Tillamook "
-"North Washington Coast "
-"Puget Sound "
-"South Washington Coast "
-"Washington Whole "
+Region,County
+California Whole ,California
+NCC MendSonoma ,Mendocino County         
+NCC MendSonoma ,Sonoma County            
+NCC SanFran ,Alameda County           
+NCC SanFran ,Contra Costa County      
+NCC SanFran ,Marin County             
+NCC SanFran ,San Francisco County     
+NCC SanFran ,San Mateo County         
+North Coast ,Del Norte County         
+North Coast ,Humboldt County          
+SCC ,Monterey County          
+SCC ,San Luis Obispo County   
+SCC ,Santa Cruz County        
+South Coast ,Los Angeles County       
+South Coast ,Orange County            
+South Coast ,Riverside County         
+South Coast ,San Diego County         
+South Coast ,Santa Barbara County     
+South Coast ,Ventura County           
+Astoria ,Clatsop County           
+Astoria ,Multnomah County         
+Brookings ,Curry County             
+Coos Bay ,Coos County              
+Coos Bay ,Douglas County           
+Coos Bay ,Lane County              
+Newport ,Lincoln County           
+Tillamook ,Tillamook County         
+Oregon Whole ,Oregon
+North Washington Coast ,Clallam County           
+North Washington Coast ,Jefferson County         
+Puget Sound ,Island County            
+Puget Sound ,King County              
+Puget Sound ,Mason County             
+Puget Sound ,Pierce County            
+Puget Sound ,San Juan County          
+Puget Sound ,Skagit County            
+Puget Sound ,Snohomish County         
+Puget Sound ,Thurston County          
+Puget Sound ,Whatcom County           
+South Washington Coast ,Clark County             
+South Washington Coast ,Grays Harbor County      
+South Washington Coast ,Pacific County           
+Washington Whole ,Washington
