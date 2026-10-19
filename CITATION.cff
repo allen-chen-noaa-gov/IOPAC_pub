@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: "Chen"
+    given-names: "Y. Allen"
+contributors:
+  - family-names: "Calhoun"
+    given-names: "W. Reid"
+    role: "researcher"
+  - family-names: "Scheld"
+    given-names: "Andrew"
+    role: "researcher"
+title: "allen-chen-noaa-gov/IOPAC_pub: ODFW DOI"
+version: "v.1.0.0"
+doi: "10.5281/zenodo.23484362"
+date-released: "2026-10-19"
+url: "https://github.com"
